@@ -1,0 +1,8 @@
+# pyc
+*.pyc
+
+# dsstore
+*.DS_Store
+
+# Bower
+Sncf_web/static/bower_components/*
