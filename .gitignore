@@ -5,4 +5,4 @@
 *.DS_Store
 
 # Bower
-Sncf_web/static/bower_components/*
+sncfweb/static/bower_components/*
