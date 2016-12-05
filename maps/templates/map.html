@@ -20,6 +20,9 @@
     <div id="mapid"></div>
     <script>
     var dataurl = "{% static 'features.geoJson' %}";
+    var mapname = "{{ map }}"
+    var mapcollection = "{{ mapcollection }}";
+    var marker_label = "{{ marker_label }}";
     var ajaxurl = "{% url 'ajax_stop_points' %}";
     </script>
     <script src="{% static 'ajaxmap.js' %}">
