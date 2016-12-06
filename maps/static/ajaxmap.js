@@ -53,6 +53,12 @@ $.getJSON(ajaxurl, // ajax view url
     },
     initialLoad);
 
+$.getJSON(ajaxdisruptionsurl, // ajax view url
+    {
+        map: mapname
+    },
+    initialLoadSchedules);
+
 function initialLoad(data){
     map.stopPointsLayer = L.geoJson(data[mapcollection],
         {onEachFeature: onEachFeature,
@@ -60,14 +66,23 @@ function initialLoad(data){
         )
     ;
     // CHECK
-    map.markers = L.markerClusterGroup();
+    map.markers = L.markerClusterGroup({
+    //spiderfyOnMaxZoom: false,
+    showCoverageOnHover: false,
+    //zoomToBoundsOnClick: false
+});
     map.markers.addLayer(map.stopPointsLayer);
     map.addLayer(map.markers);
     // Add overlay to control panel
     control.addOverlay(map.markers, marker_label);
-
 }
-
+function initialLoadSchedules(data){
+    map.stopPointsLayerSchedule = L.geoJson(data)
+    ;
+    map.addLayer(map.stopPointsLayerSchedule);
+    // Add overlay to control panel
+    control.addOverlay(map.stopPointsLayerSchedule, "Schedules");
+}
 
 function refreshGeoJsonLayer(latlng) {
     // Then get data, and add it back to the layer
@@ -87,10 +102,21 @@ function refreshGeoJsonLayer(latlng) {
     });
 }
 
+function refreshDisruptions(){
+    $.getJSON(ajaxdisruptionsurl, // ajax view url
+        {
+            map: mapname // so the ajax knows what to send
+        },
+        function (data) {
+        // First we clear the layer
+
+    });
+}
 
 function onMapDoubleClick(e) {
     var latlng = e.latlng;
     refreshGeoJsonLayer(latlng);
+    refreshDisruptions();
 }
 
 // Datas are modified if
