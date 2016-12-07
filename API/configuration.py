@@ -22,4 +22,4 @@ def get_secret(setting, mes_Secrets=secrets):
 # Keep this information secret
 USER = get_secret('USER')
 MONGOIP = get_secret('MONGOIP')
-MONGOPORT = get_secret('MONGOPORT')
+MONGOPORT = int(get_secret('MONGOPORT'))

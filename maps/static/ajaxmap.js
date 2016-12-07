@@ -74,14 +74,22 @@ function initialLoad(data){
     map.markers.addLayer(map.stopPointsLayer);
     map.addLayer(map.markers);
     // Add overlay to control panel
-    control.addOverlay(map.markers, marker_label);
+    control.addOverlay(map.markers, "Gares");
 }
+
+
+function onEachFeatureSchedule(feature, layer) {
+    layer.bindPopup(function (layer) {
+        return layer.feature.properties.label;
+    });
+}
+
 function initialLoadSchedules(data){
-    map.stopPointsLayerSchedule = L.geoJson(data)
+    map.stopPointsLayerSchedule = L.geoJson(data,{onEachFeature: onEachFeatureSchedule})
     ;
     map.addLayer(map.stopPointsLayerSchedule);
     // Add overlay to control panel
-    control.addOverlay(map.stopPointsLayerSchedule, "Schedules");
+    control.addOverlay(map.stopPointsLayerSchedule, "Perturbations");
 }
 
 function refreshGeoJsonLayer(latlng) {
