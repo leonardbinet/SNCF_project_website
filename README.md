@@ -31,8 +31,12 @@ pip install psycopg2
 http://blog.mongodb.org/post/28925264384/macosx-preferences-pane-for-mongodb
 brew install mongodb
 
+## Architecture
+![Architecture](documentation/images/architecture.png)
+
 ## Leaflet
 http://leafletjs.com/reference-1.0.2.html
+
 
 ## TODO
 
@@ -52,7 +56,12 @@ Structure better JavaScript frontend code to build map with multiple layers and 
 - Real time: everything on disruptions
 - Add journey_patterns to tiles
 
+## How it looks
+![stations](documentation/images/stations.png)
 
+![disruptions](documentation/images/disruption_focus.png)
+
+![control](documentation/images/map_control.png)
 
 ## Annexe
 http://doc.navitia.io/#public-transport-objects

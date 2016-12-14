@@ -1,14 +1,8 @@
 // Tip: mapname and map_params defined in map.html template
 
-
 //Create Base Layer, loads tiles from mapbox
 var baseMap = new L.TileLayer('https://api.mapbox.com/styles/v1/leonardbinet/ciw0kj8c500b82klkfevbaje3/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGVvbmFyZGJpbmV0IiwiYSI6ImNpdzBrNjU4NzAwMmwyb3BrYjQxemRoNnMifQ.7yzHGWbiQtCabkcgHa4oWw'
 );
-
-// Create index to put control (to show or not layers).
-var baseMapIndex = {
-  "Map": baseMap
-};
 
 // Create the map
 var map = new L.map('mapid', {
@@ -24,11 +18,16 @@ var stationStyle = {
   opacity: 0.9,
   fillOpacity: 0.7
 };
+// Line style
+function setStyle(feature) {
+    switch (feature.properties.severity.name) {
+        case 'trip canceled': return {color: "#ff0000"};
+        //case 'trip delayed':   return {color: "#0000ff"};
+    }
+}
 
-
-// Create the control and add it to the map;
-var control = L.control.layers(baseMapIndex);
-// Grab the handle of the Layer Control, it will be easier to find.
+// Create the control and add it to the map; layers will be added after
+var control = L.control.layers();
 control.addTo(map);
 
 // We create each point with its style (from GeoJSON file)
@@ -57,7 +56,7 @@ $.getJSON(ajaxdisruptionsurl, // ajax view url
     {
         map: mapname
     },
-    initialLoadSchedules);
+    initialLoadDisruptions);
 
 function initialLoad(data){
     map.stopPointsLayer = L.geoJson(data[mapcollection],
@@ -78,18 +77,22 @@ function initialLoad(data){
 }
 
 
-function onEachFeatureSchedule(feature, layer) {
+function onEachFeatureDisruption(feature, layer) {
     layer.bindPopup(function (layer) {
         return layer.feature.properties.label;
     });
 }
 
-function initialLoadSchedules(data){
-    map.stopPointsLayerSchedule = L.geoJson(data,{onEachFeature: onEachFeatureSchedule})
-    ;
-    map.addLayer(map.stopPointsLayerSchedule);
+function initialLoadDisruptions(data){
+    map.delayLayer = L.geoJson(data["delayed"],{onEachFeature: onEachFeatureDisruption});
+    map.canceledLayer = L.geoJson(data["canceled"],{onEachFeature: onEachFeatureDisruption, style:setStyle});
+
+    map.addLayer(map.delayLayer);
+    map.addLayer(map.canceledLayer);
     // Add overlay to control panel
-    control.addOverlay(map.stopPointsLayerSchedule, "Perturbations");
+    control.addOverlay(map.delayLayer, "Perturbations: retards : "+data["delayed"].length);
+    control.addOverlay(map.canceledLayer, "Perturbations: annulations : "+data["canceled"].length);
+
 }
 
 function refreshGeoJsonLayer(latlng) {

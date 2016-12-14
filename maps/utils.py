@@ -50,7 +50,7 @@ def id_to_schedule(object_id):
         return status, schedule
 
 
-def to_geosjon(coords_list, severity, display_informations, delay, cause):
+def to_geosjon(coords_list, severity, display_informations, delay, cause, trip_id):
 
     geoobject = {
         "type": "Feature",
@@ -59,7 +59,7 @@ def to_geosjon(coords_list, severity, display_informations, delay, cause):
             "delay": str(delay),
             "cause": cause,
             "display_informations": display_informations,
-            "label": display_informations["label"] + " " + severity["name"] + ". Retard: " + str(delay) + " minutes. Cause: " + cause,
+            "label": "<ul><li>" + display_informations["label"] + " </li><li>" + severity["name"] + ". </li><li>Retard: " + str(delay) + " minutes. </li><li>Cause: " + cause + ". </li><li>Trip ID: " + trip_id + ".</li><ul>",
         },
         "geometry": {"type": "LineString",
                      "coordinates": coords_list
@@ -110,10 +110,10 @@ def disruption_to_geojsons(disruption):
             cause = "non définie"
     except KeyError:
         cause = "pas trouvée"
+
     # create geojson objects
     geoJsonobject = to_geosjon(coordslist, disruption[
-        "severity"], display_informations, delay, cause)
-    print(geoJsonobject)
+        "severity"], display_informations, delay, cause, impacted_object_id)
     return geoJsonobject
 
 
@@ -147,3 +147,22 @@ def impacted_stops_to_max_delay(stop_list):
     time_diffs = list(map(strings_to_time_diff, times_tuples))
     max_delay = max(time_diffs)
     return max_delay
+
+
+def geosjons_split_cancel_delay(geoobjects):
+    """
+    Takes a list of geojson objects and split it, returns delayed, and canceled. (doesn't return 'false' objects)
+    """
+    delayed = []
+    canceled = []
+    for geoobject in geoobjects:
+        # if objet is 'false', stays false
+        if not geoobject:
+            continue
+        elif geoobject["properties"]["severity"]["name"] == "trip delayed":
+            delayed.append(geoobject)
+        elif geoobject["properties"]["severity"]["name"] == "trip canceled":
+            canceled.append(geoobject)
+        else:
+            print(geoobject)
+    return delayed, canceled
