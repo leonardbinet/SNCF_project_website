@@ -32,7 +32,7 @@ http://blog.mongodb.org/post/28925264384/macosx-preferences-pane-for-mongodb
 brew install mongodb
 
 ## Architecture
-![Architecture](documentation/images/architecture.png)
+![Architecture](documentation/images/architecture2.png)
 
 ## Leaflet
 http://leafletjs.com/reference-1.0.2.html
