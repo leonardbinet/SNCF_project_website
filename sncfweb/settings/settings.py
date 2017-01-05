@@ -122,6 +122,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "maps/static"),
     os.path.join(BASE_DIR, "sncfweb/static"),
+    os.path.join(BASE_DIR, "monitoring/static"),
+
 ]
 
 # SECRETS NOT SAVED IN VCS

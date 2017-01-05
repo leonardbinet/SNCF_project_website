@@ -33,6 +33,15 @@
 
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <button id = 'refresh_disruptions' data-loading-text="Refreshing..." type="button" class="btn btn-primary" autocomplete="off" >
+                Refresh all disruptions
+            </button>
+            <button id="update-status-circle" type="button" class="btn btn-warning btn-circle btn-lg"><i id="update-status-fa" class="fa fa-question"></i>
+            </button>
+        </div>
+    </div>
 
     <!-- /.row -->
 </div>
@@ -41,14 +50,21 @@
 
 {% block body_tail %}
 <script>
-var dataurl = "{% static 'features.geoJson' %}";
-var mapname = "{{ map }}"
-var mapcollection = "{{ mapcollection }}";
-var marker_label = "{{ marker_label }}";
-var ajaxurl = "{% url 'ajax_stop_points' %}";
+var ajaxsationsurl = "{% url 'ajax_stop_points' %}";
 var ajaxdisruptionsurl = "{% url 'ajax_disruptions' %}";
+var update_disruptions_url = "{% url 'update_disruptions' %}";
 
 </script>
-<script src="{% static 'ajaxmap.js' %}">
+<script src="{% static 'ajaxmap.js' %}"></script>
+<script src="{% static 'map_update.js' %}"></script>
+
+<script>
+  $('#refresh_disruptions').on('click', function () {
+    var btn = $(this).button('loading');
+    function resetButton(){btn.button('reset');}
+    updateDisruptions(resetButton);
+    //btn.button('reset');
+  })
 </script>
+
 {% endblock %}

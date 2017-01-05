@@ -1,3 +1,7 @@
+var mapcollection= "stop_points"
+var mapname="sncf"
+var marker_label = "label"
+
 // Tip: mapname and map_params defined in map.html template
 
 //Create Base Layer, loads tiles from mapbox
@@ -44,18 +48,15 @@ function pointToLayer(feature, latlng) {
 // We download the GeoJSON file
 // Do this in the same scope as the actualiseGeoJSON function,
 // so it can read the variable
-$.getJSON(ajaxurl, // ajax view url
+$.getJSON(ajaxsationsurl, // ajax view url
     {
         lat: 46.5,
         lng: 2.5,
-        map: mapname
     },
     initialLoad);
 
 $.getJSON(ajaxdisruptionsurl, // ajax view url
-    {
-        map: mapname
-    },
+    {},
     initialLoadDisruptions);
 
 function initialLoad(data){
@@ -98,7 +99,7 @@ function initialLoadDisruptions(data){
 function refreshGeoJsonLayer(latlng) {
     // Then get data, and add it back to the layer
     // TODO query MongoDB with parameter in bounds
-    $.getJSON(ajaxurl, // ajax view url
+    $.getJSON(ajaxsationsurl, // ajax view url
         {
             lat: latlng.lat,
             lng: latlng.lng,

@@ -6,11 +6,7 @@ from .utils import id_to_schedule, disruption_to_geojsons, geosjons_split_cancel
 
 def sncf_fr_map(request):
     # page showing sncf stations and disruptions
-    context = {
-        'map': "sncf",
-        'mapcollection': "stop_points",
-        'marker_label': "label",
-    }
+    context = {}
     return render(request, 'map.html', context)
 
 
@@ -55,4 +51,4 @@ def transilien_map(request):
 def update_disruptions(request):
     # Update data from API and save it in mongo
     query_and_save_disruptions()
-    return JsonResponse({"good": True}, safe=False)
+    return JsonResponse({"status": True})

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+<!-- Balise title <60 caractères -->
+{% block title %}
+<title>Monitoring</title>
+{% endblock %}
+
+{% block header_tail %}
+{% endblock %}
+
+
+{% block content %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Monitoring</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-6">
+
+        </div>
+        <div class="col-lg-6">
+
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    DataBases Connection Status
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <h4>MongoDB</h4>
+                    <button id="mongo-refresh" data-loading-text="Loading..." type="button" class="btn btn-primary" autocomplete="off" >Check connection</button>
+                    <button id="mongo-status-circle" type="button" class="btn btn-warning btn-circle btn-lg"><i id="mongo-status-fa" class="fa fa-question"></i>
+                    </button>
+                    <br>
+                    <br>
+                        <b>Additionnal information:</b>
+                        <p id="mongo-add-info">
+                        None
+                        </p>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+    </div>
+
+    <!-- /.row -->
+</div>
+{% endblock %}
+
+
+{% block body_tail %}
+<script>
+var mongo_ajax_url = "{% url 'ajax_monitoring_mongo_db' %}";
+
+</script>
+
+<script src="{% static 'monitoring.js' %}"></script>
+
+<script>
+  $('#mongo-refresh').on('click', function () {
+    var btn = $(this).button('loading');
+    function resetButton(){btn.button('reset');}
+    checkMongoConnection(resetButton);
+  })
+</script>
+
+{% endblock %}
