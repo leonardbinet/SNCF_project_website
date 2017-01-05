@@ -147,12 +147,12 @@ class RequestParser:
         # First operation, to parse requests text into python dictionnaries
         for page, value in self.results.items():
             # Only add if answer was good
-            if value.status_code == 200:
-                try:
+            try:
+                if value.status_code == 200:
                     self.parsed[page] = json.loads(value.text)
-                except ValueError:
-                    print("JSON decoding error.")
-                    self.parsing_errors[page] = "JSON decoding error"
+            except ValueError:
+                print("JSON decoding error.")
+                self.parsing_errors[page] = "JSON decoding error"
 
     def get_nested_items(self):
         """

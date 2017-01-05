@@ -1,3 +1,0 @@
-[submodule "dependencies/SNCF-Time-arrival-prediction"]
-	path = dependencies/SNCF-Time-arrival-prediction
-	url = https://github.com/leonardbinet/SNCF-Time-arrival-prediction.git

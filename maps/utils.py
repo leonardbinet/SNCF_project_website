@@ -1,18 +1,13 @@
 from API import api_request as api
-from API.configuration import USER, MONGOIP, MONGOPORT
-import ipdb
+from sncfweb.settings.secret import MONGOUSER, MONGOIP, MONGOPORT
+# from django.conf import settings
+
 from datetime import datetime, timedelta
 from pymongo import MongoClient
-import itertools
+from navitia_client import Client
 
 
-def id_to_schedule(object_id):
-    # status if query fails or success
-    status = False
-    # one id => one schedule
-
-    # first query mongo
-    # Initialize connection with MongoClient
+def request_mongo_schedule(object_id):
     c = MongoClient(MONGOIP, MONGOPORT)
     db = c["sncf"]
     collection = db["route_schedules"]
@@ -21,33 +16,53 @@ def id_to_schedule(object_id):
     update_time = update_time.strftime('%Y%m%dT%H%M%S')
     findquery = {"object_id": object_id, "updated_time": {"$gte": update_time}}
     result = collection.find_one(findquery)
+    return result
+
+
+def save_mongo_schedule(object_id, schedule):
+    c = MongoClient(MONGOIP, MONGOPORT)
+    db = c["sncf"]
+    collection = db["route_schedules"]
+    now = datetime.now().strftime('%Y%m%dT%H%M%S')
+    mongoobject = {"object_id": object_id,
+                   "schedule": schedule, "updated_time": now}
+    collection.insert(mongoobject)
+
+
+def request_sncf_api_schedule(object_id):
+    query_path = "coverage/sncf/trips/" + object_id + \
+        "/route_schedules"
+
+    client = Client(core_url="https://api.sncf.com/v1/",
+                    user=MONGOUSER, region="sncf")
+    response = client.raw(query_path, verbose=True)
+    routeparser = api.RequestParser({0: response}, "route_schedules")
+    routeparser.parse()
+    schedule = routeparser.nested_items["route_schedules"][0]
+    return schedule
+
+
+def id_to_schedule(object_id):
+    # status if query fails or success
+    status = False
+
+    # First query mongo database if information already available
+    result = request_mongo_schedule(object_id)
     if result:
         status = True
+        print("Data available in Mongo")
         return status, result["schedule"]
 
-    # if not present, query sncf api
-    query_path = "coverage/sncf/trips/" + object_id + \
-        "/route_schedules?data_freshness=adapted_schedule"
-    request = api.ApiRequest(USER, query_path)
-    request.compute_request_page(debug=False)
-    routeparser = api.RequestParser(request.results, "route_schedules")
-    routeparser.parse()
-    # 0 because only one per id
+    # If not, query sncf api and save it in mongo
+    print("Not available in Mongo")
     try:
-        schedule = routeparser.nested_items["route_schedules"][0]
-        # save it in mongo
-        now = datetime.now().strftime('%Y%m%dT%H%M%S')
-        mongoobject = {"object_id": object_id,
-                       "schedule": schedule, "updated_time": now}
-        collection.insert(mongoobject)
+        schedule = request_sncf_api_schedule(object_id)
+        save_mongo_schedule(object_id, schedule)
         status = True
-        return status, schedule
-
-    except IndexError:
-        # error ?
-
+    except:
+        print("Cannot get data from SNCF and save it in Mongo")
         schedule = {}
-        return status, schedule
+    return status, schedule
 
 
 def to_geosjon(coords_list, severity, display_informations, delay, cause, trip_id):
@@ -69,41 +84,38 @@ def to_geosjon(coords_list, severity, display_informations, delay, cause, trip_i
 
 
 def disruption_to_geojsons(disruption):
-    # a disruption might have multiple impacted objects/routes
-    # so return a list
-    # find impacted_objects ids of the given disruption: usually one
+    # A disruption always has only on impacted object/route
     impacted_object = disruption["impacted_objects"][0]
     impacted_object_id = impacted_object["pt_object"]["id"]
-    # ipdb.set_trace()
-    # query schedules of the impacted objects: usually one
+    # Query schedules of the impacted objects: always one
     status, schedule = id_to_schedule(impacted_object_id)
-    # if unable to get schedule, we don't show this disruption and return false
+    # If unable to get schedule, we don't show this disruption and return false
     if not status:
-        return status
-    # extract rows_list for given schedule
+        return False
+    # Extract rows_list for given schedule
     rows_list = schedule["table"]["rows"]
-    # extract label from each schedule
+    # Extract label from each schedule
     display_informations = schedule["display_informations"]
-    # extract coordonates
+    # Extract coordonates
     coordslist = list(map(lambda x: [x["stop_point"]["coord"]["lon"], x[
         "stop_point"]["coord"]["lat"]], rows_list))
     try:
         coordslist = coordslist.remove(["0.0", "0.0"])
-        # don't show if after removal there is not enough to draw a line
+        # Don't show if after removal there is not enough to draw a line
         if not coordslist:
             return False
         elif len(coordslist) < 2:
             return False
     except ValueError:
-        # no zero coordonate
+        # No zero coordonate
         pass
 
-    # compute max delay
+    # Compute max delay
     try:
         delay = impacted_stops_to_max_delay(impacted_object["impacted_stops"])
     except KeyError:
         delay = 0
-    # find cause (just look at first stop)
+    # Find cause (just look at first stop)
     try:
         cause = impacted_object["impacted_stops"][0]["cause"]
         if cause == "":
@@ -111,7 +123,7 @@ def disruption_to_geojsons(disruption):
     except KeyError:
         cause = "pas trouvée"
 
-    # create geojson objects
+    # Create geojson objects
     geoJsonobject = to_geosjon(coordslist, disruption[
         "severity"], display_informations, delay, cause, impacted_object_id)
     return geoJsonobject
@@ -166,3 +178,50 @@ def geosjons_split_cancel_delay(geoobjects):
         else:
             print(geoobject)
     return delayed, canceled
+
+
+def query_mongo_active_disruptions(limit):
+    # Get current disruptions
+    c = MongoClient(MONGOIP, MONGOPORT)
+    db = c["sncf"]
+    collection = db["disruptions"]
+    # Find disruptions still active
+    today = datetime.now().strftime('%Y%m%dT%H%M%S')
+    findquery = {"application_periods.end": {"$gte": today}}
+    disruptions_list = collection.find(findquery).limit(limit)
+    return disruptions_list
+
+
+def query_mongo_near_stations(lat, lng, limit=3000, max_distance=12000000):
+    # Assuming mongodb is running on 'localhost' with port 27017
+    c = MongoClient(MONGOIP, MONGOPORT)
+    db = c["sncf"]
+    collection = db["stop_points"]
+    # Get points in these bounds
+    filter1 = {"geometry": {"$near": {"$geometry": {
+        "type": "Point",  "coordinates": [float(lng), float(lat)]},
+        "$maxDistance": max_distance}}}
+    # Restult dict, with message and status
+    stop_points = list(collection.find(filter1, {'_id': 0}).limit(limit))
+    return stop_points
+
+
+def query_and_save_disruptions():
+    # Update data from API and save it in mongo
+    client = Client(core_url="https://api.sncf.com/v1/",
+                    user=MONGOUSER, region="sncf")
+    response = client.explore("disruptions", multipage=True, page_limit=300,
+                              count_per_page=50, verbose=True)
+    parser = api.RequestParser(response, "disruptions")
+    parser.parse()
+    disruptions_list = parser.nested_items["disruptions"]
+
+    # Initialize connection with MongoClient
+    c = MongoClient(MONGOIP, MONGOPORT)
+    db = c["sncf"]
+    collection = db["disruptions"]
+
+    # Save elements
+    for disruption in disruptions_list:
+        findquery = {"disruption_id": disruption["disruption_id"]}
+        collection.update(findquery, disruption, upsert=True)

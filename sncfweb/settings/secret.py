@@ -20,6 +20,6 @@ def get_secret(setting, mes_Secrets=secrets):
         print("Impossible to get " + setting)
 
 # Keep this information secret
-USER = get_secret('USER')
+MONGOUSER = get_secret('USER')
 MONGOIP = get_secret('MONGOIP')
 MONGOPORT = int(get_secret('MONGOPORT'))
