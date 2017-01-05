@@ -21,6 +21,15 @@ function updateHtml(response){
     $("#mongo-status-fa").attr('class', faviconClass);
     $("#mongo-add-info").html(printed_info);
 
+    // Now create divs and display bars
+    var databasesStats = response['add_info']['databases_stats']
+    var arrayLength = databasesStats.length;
+    for (var i = 0; i < arrayLength; i++) {
+        var databaseName = databasesStats[i]["database"];
+        var databaseData = databasesStats[i]["collections"];
+        createDiv(databaseName);
+        showMongoCollStats(databaseName,databaseData);
+    }
 }
 
 function checkMongoConnection(callback) {
@@ -33,3 +42,33 @@ function checkMongoConnection(callback) {
     callback();
 
 }
+
+function createDiv(databaseName){
+    var newDiv = "<h3> Database: "+databaseName+"</h3><div id='"+databaseName+"' style='height: 250px;'></div>";
+    $("#databases_stats").append(newDiv)
+}
+
+function showMongoCollStats(databaseName,databaseData){
+Morris.Bar({
+  element: databaseName,
+  data: databaseData,
+  xkey: 'collection',
+  ykeys: ['count'],
+  labels: ['Count']
+});
+}
+
+/*
+Morris.Bar({
+  element: databaseName,
+  data: [
+    { col: 'stat', count: 75},
+    { col: 'disruptions', count: 40},
+    { col: 'new', count: 24},
+    { col: 'other', count: 75},
+  ],
+  xkey: 'col',
+  ykeys: ['count'],
+  labels: ['Count']
+});
+*/

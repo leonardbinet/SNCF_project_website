@@ -35,7 +35,8 @@ def check_mongo_connection(host, user=None, password=None, port=None, database=N
         status = True
         add_info = {
             "server_info": server_info,
-            "database_names": database_names
+            "database_names": database_names,
+            "databases_stats": get_databases_stats(client)
         }
         print("MongoDB connection OK")
     except pymongo.errors.ServerSelectionTimeoutError as err:
@@ -43,3 +44,24 @@ def check_mongo_connection(host, user=None, password=None, port=None, database=N
         add_info = None
         print(err)
     return status, add_info
+
+
+def get_databases_stats(client):
+    result = []
+    database_names = client.database_names()
+    for database_name in database_names:
+        database_result = []
+        collection_names = client[database_name].collection_names()
+        for collection_name in collection_names:
+            database_result.append(
+                {
+                    "collection": collection_name,
+                    "count": client[database_name][collection_name].count()
+                })
+        added_object = {
+            "database": database_name,
+            "collections": database_result
+        }
+        result.append(added_object)
+
+    return result

@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block header_tail %}
+
 {% endblock %}
 
 
@@ -20,10 +21,8 @@
     </div>
     <!-- /.row -->
     <div class="row">
-        <div class="col-lg-6">
 
-        </div>
-        <div class="col-lg-6">
+        <div class="col-lg-12">
 
             <!-- /.panel -->
             <div class="panel panel-default">
@@ -38,15 +37,18 @@
                     </button>
                     <br>
                     <br>
-                        <b>Additionnal information:</b>
-                        <p id="mongo-add-info">
-                        None
-                        </p>
+                    <b>Additionnal information:</b>
+                    <p id="mongo-add-info">
+                    None
+                    </p>
+                    <div id="databases_stats"></div>
                 </div>
+
                 <!-- /.panel-body -->
             </div>
             <!-- /.panel -->
         </div>
+
     </div>
 
     <!-- /.row -->
@@ -55,10 +57,10 @@
 
 
 {% block body_tail %}
-<script>
-var mongo_ajax_url = "{% url 'ajax_monitoring_mongo_db' %}";
-
-</script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+<script>var mongo_ajax_url = "{% url 'ajax_monitoring_mongo_db' %}";</script>
 
 <script src="{% static 'monitoring.js' %}"></script>
 
@@ -67,7 +69,10 @@ var mongo_ajax_url = "{% url 'ajax_monitoring_mongo_db' %}";
     var btn = $(this).button('loading');
     function resetButton(){btn.button('reset');}
     checkMongoConnection(resetButton);
-  })
+});
+
+showMongoCollStats();
+
 </script>
 
 {% endblock %}
