@@ -1,4 +1,4 @@
-from . import parser as api
+from . import parser
 from django.conf import settings
 
 from datetime import datetime, timedelta
@@ -39,7 +39,7 @@ def request_sncf_api_schedule(object_id):
     client = Client(core_url="https://api.sncf.com/v1/",
                     user=MONGOUSER, region="sncf")
     response = client.raw(query_path, verbose=True)
-    routeparser = api.RequestParser({0: response}, "route_schedules")
+    routeparser = parser.RequestParser({0: response}, "route_schedules")
     routeparser.parse()
     schedule = routeparser.nested_items["route_schedules"][0]
     return schedule
@@ -215,9 +215,9 @@ def query_and_save_disruptions():
                     user=MONGOUSER, region="sncf")
     response = client.explore("disruptions", multipage=True, page_limit=300,
                               count_per_page=50, verbose=True)
-    parser = api.RequestParser(response, "disruptions")
-    parser.parse()
-    disruptions_list = parser.nested_items["disruptions"]
+    parsed = parser.RequestParser(response, "disruptions")
+    parsed.parse()
+    disruptions_list = parsed.nested_items["disruptions"]
 
     # Initialize connection with MongoClient
     c = MongoClient(MONGOIP, MONGOPORT)

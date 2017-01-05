@@ -4,7 +4,7 @@ from multiprocessing import Pool
 from .utils import id_to_schedule, disruption_to_geojsons, geosjons_split_cancel_delay, query_mongo_active_disruptions, query_mongo_near_stations, query_and_save_disruptions
 
 
-def index(request):
+def sncf_fr_map(request):
     # page showing sncf stations and disruptions
     context = {
         'map': "sncf",
