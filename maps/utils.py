@@ -1,10 +1,13 @@
-from API import api_request as api
-from sncfweb.settings.secret import MONGOUSER, MONGOIP, MONGOPORT
-# from django.conf import settings
+from . import parser as api
+from django.conf import settings
 
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from navitia_client import Client
+
+MONGOUSER = settings.MONGOUSER
+MONGOIP = settings.MONGOIP
+MONGOPORT = settings.MONGOPORT
 
 
 def request_mongo_schedule(object_id):

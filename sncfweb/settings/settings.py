@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,8 +20,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'o$!8rarvby8%au*)aeq2!+9=^*_(zae9=gg)yo)=&&6&0rp(3w'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -129,3 +128,19 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "sncfweb/static"),
     os.path.join(BASE_DIR, "sncfweb/static/bower_components"),
 ]
+
+with open(os.path.join(BASE_DIR, 'settings/secret.json')) as secrets_file:
+    secrets = json.load(secrets_file)
+
+
+def get_secret(setting, my_secrets=secrets):
+    try:
+        return my_secrets[setting]
+    except KeyError:
+        print("Impossible to get " + setting)
+
+MONGOUSER = get_secret('USER')
+MONGOIP = get_secret('MONGOIP')
+MONGOPORT = int(get_secret('MONGOPORT'))
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = get_secret('SECRET_KEY')
