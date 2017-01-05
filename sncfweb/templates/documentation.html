@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+<!-- Balise title <60 caractères -->
+{% block title %}
+<title>Documentation</title>
+{% endblock %}
+
+{% block header_up %}
+
+{% endblock %}
+
+{% block content %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Documentation</h1>
+            <h2>Api Extraction</h2>
+            <img src="{% static 'images/docs/api-extraction.png' %}" class="img-responsive" alt="Responsive image">
+            <br /><br /><br /><br /><br /><br />
+            <h2>Data Flowchart</h2>
+            <img src="{% static 'images/docs/data-flowchart.png' %}" class="img-responsive" alt="Responsive image">
+            <br /><br /><br /><br /><br /><br />
+            <h2>Project Timeline</h2>
+            <img src="{% static 'images/docs/project-timeline.jpg' %}" class="img-responsive" alt="Responsive image">
+            <br /><br /><br /><br /><br /><br />
+            <h2>Get Real Arrival Times</h2>
+            <img src="{% static 'images/docs/real-time.png' %}" class="img-responsive" alt="Responsive image">
+
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+
+</div>
+{% endblock %}
+
+{% block body_tail %}
+
+{% endblock %}

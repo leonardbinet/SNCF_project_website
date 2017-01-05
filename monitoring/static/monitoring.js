@@ -22,8 +22,11 @@ function updateHtml(response){
     $("#mongo-add-info").html(printed_info);
 
     // Now create divs and display bars
-    var databasesStats = response['add_info']['databases_stats']
+
+    var databasesStats = response['add_info']['databases_stats'];
     var arrayLength = databasesStats.length;
+    // clear div if needed
+    $("#databases_stats").empty();
     for (var i = 0; i < arrayLength; i++) {
         var databaseName = databasesStats[i]["database"];
         var databaseData = databasesStats[i]["collections"];
