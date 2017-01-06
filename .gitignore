@@ -7,3 +7,6 @@
 # Bower
 sncfweb/static/bower_components/*
 components/*
+
+# Secrets
+sncfweb/settings/secret.json
