@@ -7,19 +7,29 @@ BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 
 # SECRETS NOT SAVED IN VCS
-with open(os.path.join(BASE_DIR, 'sncfweb/settings/secret.json')) as secrets_file:
-    secrets = json.load(secrets_file)
+try:
+    with open(os.path.join(BASE_DIR, 'sncfweb/settings/secret.json')) as secrets_file:
+        secrets = json.load(secrets_file)
+except:
+    secrets = {}
+    print("No file")
 
 
 def get_secret(setting, my_secrets=secrets):
     try:
+        value = my_secrets[setting]
+        # set as environment variable
+        os.environ[setting] = value
         return my_secrets[setting]
     except KeyError:
         print("Impossible to get " + setting)
 
-MONGOUSER = get_secret('USER')
-MONGOIP = get_secret('MONGOIP')
-MONGOPORT = int(get_secret('MONGOPORT'))
+SNCF_API_USER = get_secret("SNCF_API_USER")
+
+MONGO_USER = get_secret('MONGO_USER')
+MONGO_HOST = get_secret('MONGO_HOST')
+MONGO_PASSWORD = get_secret('MONGO_PASSWORD')
+# MONGO_PORT = int(get_secret('MONGOPORT'))
 
 SECRET_KEY = get_secret('SECRET_KEY')
 

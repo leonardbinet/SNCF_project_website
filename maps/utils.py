@@ -1,17 +1,21 @@
 from . import parser
+import os
 from django.conf import settings
-
+from monitoring.utils import connect_mongoclient
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from navitia_client import Client
 
-MONGOUSER = settings.MONGOUSER
-MONGOIP = settings.MONGOIP
-MONGOPORT = settings.MONGOPORT
+MONGO_USER = os.environ["MONGO_USER"]
+MONGO_HOST = os.environ["MONGO_HOST"]
+MONGO_PASSWORD = os.environ["MONGO_PASSWORD"]
+
+SNCF_API_USER = os.environ["SNCF_API_USER"]
 
 
 def request_mongo_schedule(object_id):
-    c = MongoClient(MONGOIP, MONGOPORT)
+    c = connect_mongoclient(
+        host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
     db = c["sncf"]
     collection = db["route_schedules"]
     # search for max 3 hours old information
@@ -23,7 +27,8 @@ def request_mongo_schedule(object_id):
 
 
 def save_mongo_schedule(object_id, schedule):
-    c = MongoClient(MONGOIP, MONGOPORT)
+    c = connect_mongoclient(
+        host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
     db = c["sncf"]
     collection = db["route_schedules"]
     now = datetime.now().strftime('%Y%m%dT%H%M%S')
@@ -37,7 +42,7 @@ def request_sncf_api_schedule(object_id):
         "/route_schedules"
 
     client = Client(core_url="https://api.sncf.com/v1/",
-                    user=MONGOUSER, region="sncf")
+                    user=SNCF_API_USER, region="sncf")
     response = client.raw(query_path, verbose=True)
     routeparser = parser.RequestParser({0: response}, "route_schedules")
     routeparser.parse()
@@ -185,7 +190,8 @@ def geosjons_split_cancel_delay(geoobjects):
 
 def query_mongo_active_disruptions(limit):
     # Get current disruptions
-    c = MongoClient(MONGOIP, MONGOPORT)
+    c = connect_mongoclient(
+        host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
     db = c["sncf"]
     collection = db["disruptions"]
     # Find disruptions still active
@@ -197,7 +203,8 @@ def query_mongo_active_disruptions(limit):
 
 def query_mongo_near_stations(lat, lng, limit=3000, max_distance=12000000):
     # Assuming mongodb is running on 'localhost' with port 27017
-    c = MongoClient(MONGOIP, MONGOPORT)
+    c = connect_mongoclient(
+        host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
     db = c["sncf"]
     collection = db["stop_points"]
     # Get points in these bounds
@@ -212,7 +219,7 @@ def query_mongo_near_stations(lat, lng, limit=3000, max_distance=12000000):
 def query_and_save_disruptions():
     # Update data from API and save it in mongo
     client = Client(core_url="https://api.sncf.com/v1/",
-                    user=MONGOUSER, region="sncf")
+                    user=SNCF_API_USER, region="sncf")
     response = client.explore("disruptions", multipage=True, page_limit=300,
                               count_per_page=50, verbose=True)
     parsed = parser.RequestParser(response, "disruptions")
@@ -220,7 +227,8 @@ def query_and_save_disruptions():
     disruptions_list = parsed.nested_items["disruptions"]
 
     # Initialize connection with MongoClient
-    c = MongoClient(MONGOIP, MONGOPORT)
+    c = connect_mongoclient(
+        host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
     db = c["sncf"]
     collection = db["disruptions"]
 

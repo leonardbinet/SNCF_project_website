@@ -1,11 +1,11 @@
+import os
 from django.shortcuts import render
-from .utils import check_mongo_connection
-from django.conf import settings
+from monitoring.utils import check_mongo_connection
 from django.http import JsonResponse
 
-MONGOUSER = settings.MONGOUSER
-MONGOIP = settings.MONGOIP
-MONGOPORT = settings.MONGOPORT
+MONGO_USER = os.environ["MONGO_USER"]
+MONGO_HOST = os.environ["MONGO_HOST"]
+MONGO_PASSWORD = os.environ["MONGO_PASSWORD"]
 
 
 def index(request):
@@ -14,6 +14,7 @@ def index(request):
 
 
 def ajax_monitoring_mongo_db(request):
-    status, add_info = check_mongo_connection(MONGOIP)
+    status, add_info = check_mongo_connection(
+        user=MONGO_USER, host=MONGO_HOST, password=MONGO_PASSWORD)
     response = {"status": status, "add_info": add_info or ""}
     return JsonResponse(response)
