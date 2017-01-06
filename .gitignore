@@ -16,3 +16,6 @@ sncfweb/settings/secret.json
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+#Temp
+temp/*
