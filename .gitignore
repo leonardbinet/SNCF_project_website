@@ -10,3 +10,11 @@ components/*
 
 # Secrets
 sncfweb/settings/secret.json
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# Reminder
+reminder.md

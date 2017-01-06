@@ -1,12 +1,33 @@
+# See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
+
 import os
 import json
 
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 
+# SECRETS NOT SAVED IN VCS
+with open(os.path.join(BASE_DIR, 'sncfweb/settings/secret.json')) as secrets_file:
+    secrets = json.load(secrets_file)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
+
+def get_secret(setting, my_secrets=secrets):
+    try:
+        return my_secrets[setting]
+    except KeyError:
+        print("Impossible to get " + setting)
+
+MONGOUSER = get_secret('USER')
+MONGOIP = get_secret('MONGOIP')
+MONGOPORT = int(get_secret('MONGOPORT'))
+
+SECRET_KEY = get_secret('SECRET_KEY')
+
+POSTRES_HOST = get_secret('POSTRES_HOST')
+POSTRES_PORT = get_secret('POSTRES_PORT')
+POSTRES_USER = get_secret('POSTRES_USER')
+POSTRES_PASSWORD = get_secret('POSTRES_PASSWORD')
+POSTRES_DBNAME = get_secret('POSTRES_DBNAME')
 
 
 ALLOWED_HOSTS = ['*']
@@ -20,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'maps',
     'monitoring',
-    'schedule',
     'django.contrib.gis',
     'djangobower',
 ]
@@ -66,9 +86,11 @@ WSGI_APPLICATION = 'sncfweb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'sncfweb',
-        'USER': 'sncfdjango',
-        'PASSWORD': 'fil_rouge',
+        'NAME': POSTRES_DBNAME,
+        'USER': POSTRES_USER,
+        'PASSWORD': POSTRES_PASSWORD,
+        'HOST': POSTRES_HOST,
+        'PORT': POSTRES_PORT,
     },
 }
 
@@ -129,20 +151,3 @@ BOWER_INSTALLED_APPS = (
     'jquery',
     'bootstrap'
 )
-
-# SECRETS NOT SAVED IN VCS
-
-with open(os.path.join(BASE_DIR, 'sncfweb/settings/secret.json')) as secrets_file:
-    secrets = json.load(secrets_file)
-
-
-def get_secret(setting, my_secrets=secrets):
-    try:
-        return my_secrets[setting]
-    except KeyError:
-        print("Impossible to get " + setting)
-
-MONGOUSER = get_secret('USER')
-MONGOIP = get_secret('MONGOIP')
-MONGOPORT = int(get_secret('MONGOPORT'))
-SECRET_KEY = get_secret('SECRET_KEY')

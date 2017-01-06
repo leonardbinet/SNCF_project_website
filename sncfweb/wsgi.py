@@ -1,5 +1,5 @@
 """
-WSGI config for Sncf_web project.
+WSGI config for sncfweb project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Sncf_web.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sncfweb.settings.prod")
 
 application = get_wsgi_application()
