@@ -6,6 +6,9 @@ import json
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 
+ENV_DIR = os.path.dirname(BASE_DIR)
+
+
 # SECRETS NOT SAVED IN VCS
 try:
     with open(os.path.join(BASE_DIR, 'sncfweb/settings/secret.json')) as secrets_file:
@@ -148,6 +151,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "monitoring/static"),
 
 ]
+
+# Endroit ou ce sera stocké sur le serveur
+STATIC_ROOT = os.path.join(ENV_DIR, 'deploy/static/')
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
