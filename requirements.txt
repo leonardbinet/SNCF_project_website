@@ -1,8 +1,8 @@
 Django==1.10.3
 django-bower==5.2.0
-psycopg2==2.6.2
 pymongo==3.3.1
 six==1.10.0
 navitia_client
 pandas
 numpy
+http://dev.mysql.com/get/Downloads/Connector-Python/mysql-co‌​nnector-python-2.1.4‌​.zip
