@@ -11,7 +11,7 @@ except ImportError:
     from urllib import quote_plus
 
 
-def connect_mongoclient(host, user=None, password=None, port=None, database=None, max_delay=500):
+def connect_mongoclient(host, user=None, password=None, port=None, database=None, max_delay=15000):
     # Build URI
     uri = "mongodb://"
     if user and password:
@@ -33,7 +33,7 @@ def check_mongo_connection(host, user=None, password=None, port=None, database=N
     try:
         server_info = client.server_info()
         database_names = client.database_names()
-        print(server_info)
+        # print(server_info)
         status = True
         add_info = {
             "server_info": server_info,

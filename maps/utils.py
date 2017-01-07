@@ -5,6 +5,7 @@ from monitoring.utils import connect_mongoclient
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from navitia_client import Client
+from multiprocessing import Pool
 
 MONGO_USER = os.environ["MONGO_USER"]
 MONGO_HOST = os.environ["MONGO_HOST"]
@@ -216,6 +217,15 @@ def query_mongo_near_stations(lat, lng, limit=3000, max_distance=12000000):
     return stop_points
 
 
+def insert_disruption_mongo(disruption, host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD):
+    c = connect_mongoclient(
+        host=host, user=user, password=password)
+    db = c["sncf"]
+    collection = db["disruptions"]
+    findquery = {"disruption_id": disruption["disruption_id"]}
+    collection.update(findquery, disruption, upsert=True)
+
+
 def query_and_save_disruptions():
     # Update data from API and save it in mongo
     client = Client(core_url="https://api.sncf.com/v1/",
@@ -223,16 +233,18 @@ def query_and_save_disruptions():
     response = client.explore("disruptions", multipage=True, page_limit=300,
                               count_per_page=50, verbose=True)
     parsed = parser.RequestParser(response, "disruptions")
+    print("Begin parsing")
     parsed.parse()
     disruptions_list = parsed.nested_items["disruptions"]
-
+    print("Result parsed, begin saving in MongoDB")
     # Initialize connection with MongoClient
-    c = connect_mongoclient(
-        host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
-    db = c["sncf"]
-    collection = db["disruptions"]
 
     # Save elements
-    for disruption in disruptions_list:
-        findquery = {"disruption_id": disruption["disruption_id"]}
-        collection.update(findquery, disruption, upsert=True)
+    pool = Pool(processes=5)
+    pool.map(insert_disruption_mongo, disruptions_list)
+    pool.close()
+    pool.join()
+
+    # for disruption in disruptions_list:
+    #    findquery = {"disruption_id": disruption["disruption_id"]}
+    #    collection.update(findquery, disruption, upsert=True)

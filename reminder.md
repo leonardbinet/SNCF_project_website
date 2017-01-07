@@ -62,3 +62,26 @@ collection.insert_many(stations["features"])
 collection.create_index([("geometry", GEOSPHERE)])
 
 ```
+
+
+# Env creation
+
+https://github.com/ashokfernandez/Django-Fabric-AWS
+
+https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-centos-7
+
+http://agiliq.com/blog/2014/08/deploying-a-django-app-on-amazon-ec2-instance/
+http://stackoverflow.com/questions/16123459/virtualenvwrapper-and-python-3
+http://ask.xmodulo.com/install-python3-centos.html
+```
+sudo yum install python-devel postgresql-devel
+
+
+sudo yum install nginx
+sudo service nginx start
+
+sudo vim /etc/nginx/sites-enabled/default
+
+sudo pip install gunicorn
+```
+open HTTP traffic on aws for this instance
