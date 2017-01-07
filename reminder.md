@@ -37,6 +37,11 @@ You have to set up a Postrgres DB, and either:
 
 - OR write these variables in a JSON file in sncfweb/settings/secret.json:
 
+## Mysql
+```
+pip install --egg http://dev.mysql.com/get/Downloads/Connector-Python/mysql-co‌​nnector-python-2.1
+.4‌​.zip
+```
 
 ## MongoDB requirements
 

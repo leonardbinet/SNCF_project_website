@@ -36,11 +36,11 @@ MONGO_PASSWORD = get_secret('MONGO_PASSWORD')
 
 SECRET_KEY = get_secret('SECRET_KEY')
 
-POSTRES_HOST = get_secret('POSTRES_HOST')
-POSTRES_PORT = get_secret('POSTRES_PORT')
-POSTRES_USER = get_secret('POSTRES_USER')
-POSTRES_PASSWORD = get_secret('POSTRES_PASSWORD')
-POSTRES_DBNAME = get_secret('POSTRES_DBNAME')
+DJANGO_DB_HOST = get_secret('DJANGO_DB_HOST')
+DJANGO_DB_PORT = get_secret('DJANGO_DB_PORT')
+DJANGO_DB_USER = get_secret('DJANGO_DB_USER')
+DJANGO_DB_PASSWORD = get_secret('DJANGO_DB_PASSWORD')
+DJANGO_DB_NAME = get_secret('DJANGO_DB_NAME')
 
 
 ALLOWED_HOSTS = ['*']
@@ -98,12 +98,12 @@ WSGI_APPLICATION = 'sncfweb.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': POSTRES_DBNAME,
-        'USER': POSTRES_USER,
-        'PASSWORD': POSTRES_PASSWORD,
-        'HOST': POSTRES_HOST,
-        'PORT': POSTRES_PORT,
+        'ENGINE': 'mysql.connector.django',
+        'NAME': DJANGO_DB_NAME,
+        'USER': DJANGO_DB_USER,
+        'PASSWORD': DJANGO_DB_PASSWORD,
+        'HOST': DJANGO_DB_HOST,
+        'PORT': DJANGO_DB_PORT,
     },
 }
 
