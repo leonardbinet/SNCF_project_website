@@ -37,10 +37,14 @@ You have to set up a Postrgres DB, and either:
 
 - OR write these variables in a JSON file in sncfweb/settings/secret.json:
 
+# Python 3
+curl -O https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py
+pip install --user -r -requirements.txt
+
 ## Mysql
 ```
-pip install --egg http://dev.mysql.com/get/Downloads/Connector-Python/mysql-co‌​nnector-python-2.1
-.4‌​.zip
+pip install --egg http://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python-2.1.4.zip
 ```
 
 ## MongoDB requirements
@@ -73,6 +77,8 @@ collection.create_index([("geometry", GEOSPHERE)])
 
 pandas installation:
 http://stackoverflow.com/questions/29516084/gcc-failed-during-pandas-build-on-aws-elastic-beanstalk
+http://stackoverflow.com/questions/11094718/error-command-gcc-failed-with-exit-status-1-while-installing-eventlet
+
 
 https://github.com/ashokfernandez/Django-Fabric-AWS
 
