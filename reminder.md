@@ -1,5 +1,9 @@
 # Deployment
 
+# Ssh connection
+
+ssh -i "/Users/leonardbinet/.ssh/aws-eb2" ec2-user@ec2-54-154-171-111.eu-west-1.compute.amazonaws.com
+
 python 3
 `pip install -r requirements`
 
@@ -47,8 +51,16 @@ pip3 install --user -r requirements.txt
 
 ssh -i "/Users/leonardbinet/.ssh/aws-eb2" ec2-user@ec2-54-154-171-111.eu-west-1.compute.amazonaws.com
 
+sudo chmod 777 settings
+
 scp -i "/Users/leonardbinet/.ssh/aws-eb2" secret.json ec2-user@ec2-54-154-171-111.eu-west-1.compute.amazonaws.com:
 
+
+sudo mv secret.json /opt/python/current/app/sncfweb/settings
+sudo chmod 777 secret.json
+
+## Wsgi
+sudo chmod a+x wsgi.py
 
 ## Mysql
 ```

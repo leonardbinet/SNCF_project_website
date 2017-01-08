@@ -1,6 +1,5 @@
 from . import parser
 import os
-from django.conf import settings
 from monitoring.utils import connect_mongoclient
 from datetime import datetime, timedelta
 from pymongo import MongoClient
