@@ -38,9 +38,17 @@ You have to set up a Postrgres DB, and either:
 - OR write these variables in a JSON file in sncfweb/settings/secret.json:
 
 # Python 3
-curl -O https://bootstrap.pypa.io/get-pip.py
-python3 get-pip.py
-pip install --user -r -requirements.txt
+sudo curl -O https://bootstrap.pypa.io/get-pip.py
+sudo python3 get-pip.py
+pip3 install --user -r requirements.txt
+
+## Secrets
+
+
+ssh -i "/Users/leonardbinet/.ssh/aws-eb2" ec2-user@ec2-54-154-171-111.eu-west-1.compute.amazonaws.com
+
+scp -i "/Users/leonardbinet/.ssh/aws-eb2" secret.json ec2-user@ec2-54-154-171-111.eu-west-1.compute.amazonaws.com:
+
 
 ## Mysql
 ```
