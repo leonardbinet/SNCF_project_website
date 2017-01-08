@@ -71,6 +71,9 @@ collection.create_index([("geometry", GEOSPHERE)])
 
 # Env creation
 
+pandas installation:
+http://stackoverflow.com/questions/29516084/gcc-failed-during-pandas-build-on-aws-elastic-beanstalk
+
 https://github.com/ashokfernandez/Django-Fabric-AWS
 
 https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-centos-7
