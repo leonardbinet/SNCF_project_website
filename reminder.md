@@ -66,6 +66,8 @@ sudo chmod a+x wsgi.py
 ```
 pip install --egg http://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python-2.1.4.zip
 ```
+brew install mysql-connector-c
+
 
 ## MongoDB requirements
 

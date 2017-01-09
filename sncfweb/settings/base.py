@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'maps',
     'monitoring',
     'django.contrib.gis',
-    'djangobower',
+    #'djangobower',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +90,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'sncfweb.wsgi.application'
+# WSGI_APPLICATION = 'sncfweb.wsgi.application'
 
 
 # Database
