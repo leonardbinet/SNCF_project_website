@@ -18,7 +18,7 @@ def connect_mongoclient(host, user=None, password=None, port=None, database=None
         uri += "%s:%s@" % (quote_plus(user), quote_plus(password))
     uri += host
     if port:
-        uri += str(port)
+        uri += ":" + str(port)
     if database:
         uri += "/%s" % quote_plus(database)
     client = MongoClient(uri, serverSelectionTimeoutMS=max_delay)
