@@ -157,7 +157,8 @@ STATICFILES_DIRS = [
 ]
 
 # Endroit ou ce sera stocké sur le serveur
-STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
+# STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
