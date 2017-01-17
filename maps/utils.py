@@ -1,10 +1,13 @@
+from gevent import monkey
+monkey.patch_all()
+
 from . import parser
 import os
 from monitoring.utils import connect_mongoclient
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from navitia_client import Client
-from multiprocessing import Pool
+from gevent.pool import Pool
 import ipdb
 import pandas as pd
 
@@ -246,9 +249,8 @@ def query_and_save_disruptions(today=True):
 
     # Initialize connection with MongoClient
     # Save elements
-    pool = Pool(processes=30)
+    pool = Pool(30)
     pool.map(insert_disruption_mongo, disruptions_list)
-    pool.close()
     pool.join()
 
     # for disruption in disruptions_list:
