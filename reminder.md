@@ -2,7 +2,7 @@
 
 # Ssh connection
 
-ssh -i "/Users/leonardbinet/.ssh/aws-eb2" ec2-user@ec2-54-154-171-111.eu-west-1.compute.amazonaws.com
+ssh -i "~/.ssh/aws-eb2" ubuntu@ec2-54-194-138-195.eu-west-1.compute.amazonaws.com
 
 python 3
 `pip install -r requirements`
