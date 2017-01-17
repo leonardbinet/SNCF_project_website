@@ -7,3 +7,4 @@ navitia_client
 pandas
 numpy
 gevent
+ipdb
