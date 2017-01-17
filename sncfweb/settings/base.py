@@ -101,14 +101,13 @@ DATABASES = {
         'NAME': 'mydatabase',
     },
 
-    'other': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': DJANGO_DB_NAME,
-        'USER': DJANGO_DB_USER,
-        'PASSWORD': DJANGO_DB_PASSWORD,
-        'HOST': DJANGO_DB_HOST,
-        'PORT': DJANGO_DB_PORT,
-    },
+    #'other': {
+    #    'ENGINE': 'django.db.backends.mysql',
+    #    'NAME': DJANGO_DB_NAME,
+    #    'USER': DJANGO_DB_USER,
+    #    'PASSWORD': DJANGO_DB_PASSWORD,
+    #    'PORT': DJANGO_DB_PORT,
+    #},
 }
 
 
