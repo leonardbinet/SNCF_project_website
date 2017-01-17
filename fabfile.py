@@ -1,19 +1,31 @@
 from fabric.contrib.files import append, exists, sed
-from fabric.api import env, local, run
+from fabric.api import env, local, run, put
 import random
+from os import path
 
+env.key_filename = "~/.ssh/aws-eb2"
 
 REPO_URL = 'https://github.com/leonardbinet/SNCF_project_website.git'
+PROJECT_NAME = "sncf"
+SECRET_PATH = "sncfweb/settings/secret.json"
+
+site_folder = '~/sites/%s' % (PROJECT_NAME)
+source_folder = site_folder + '/source'
 
 
 def deploy():
-    site_folder = '/home/%s/sites/%s' % (env.user, env.host)
-    source_folder = site_folder + '/source'
+
     _create_directory_structure_if_necessary(site_folder)
     _get_latest_source(source_folder)
+    _send_secret_json()
     _update_virtualenv(source_folder)
     _update_static_files(source_folder)
     _update_database(source_folder)
+
+
+def _send_secret_json():
+
+    put(SECRET_PATH, path.join(source_folder, SECRET_PATH))
 
 
 def _create_directory_structure_if_necessary(site_folder):
@@ -28,10 +40,6 @@ def _get_latest_source(source_folder):
         run('git clone %s %s' % (REPO_URL, source_folder))
     current_commit = local("git log -n 1 --format=%H", capture=True)
     run('cd %s && git reset --hard %s' % (source_folder, current_commit))
-
-
-def _send_secret_file(source_folder, site_name):
-    pass
 
 
 def _update_virtualenv(source_folder):
