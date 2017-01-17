@@ -102,7 +102,7 @@ DATABASES = {
     },
 
     'other': {
-        'ENGINE': 'mysql.connector.django',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': DJANGO_DB_NAME,
         'USER': DJANGO_DB_USER,
         'PASSWORD': DJANGO_DB_PASSWORD,
