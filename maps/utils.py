@@ -18,11 +18,16 @@ MONGO_PASSWORD = os.environ["MONGO_PASSWORD"]
 SNCF_API_USER = os.environ["SNCF_API_USER"]
 
 
-def request_mongo_schedule(object_id):
+def get_collection(collection):
     c = connect_mongoclient(
         host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
     db = c["sncf"]
-    collection = db["route_schedules"]
+    collection = db[collection]
+    return collection
+
+
+def request_mongo_schedule(object_id):
+    collection = get_collection("route_schedules")
     # search for max 3 hours old information
     update_time = datetime.now() - timedelta(hours=3)
     update_time = update_time.strftime('%Y%m%dT%H%M%S')
@@ -32,10 +37,7 @@ def request_mongo_schedule(object_id):
 
 
 def save_mongo_schedule(object_id, schedule):
-    c = connect_mongoclient(
-        host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
-    db = c["sncf"]
-    collection = db["route_schedules"]
+    collection = get_collection("route_schedules")
     now = datetime.now().strftime('%Y%m%dT%H%M%S')
     mongoobject = {"object_id": object_id,
                    "schedule": schedule, "updated_time": now}
@@ -194,11 +196,7 @@ def geosjons_split_cancel_delay(geoobjects):
 
 
 def query_mongo_active_disruptions(limit):
-    # Get current disruptions
-    c = connect_mongoclient(
-        host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
-    db = c["sncf"]
-    collection = db["disruptions"]
+    collection = get_collection("disruptions")
     # Find disruptions still active
     today = datetime.now().strftime('%Y%m%dT%H%M%S')
     findquery = {"application_periods.end": {"$gte": today}}
@@ -208,10 +206,7 @@ def query_mongo_active_disruptions(limit):
 
 def query_mongo_near_stations(lat, lng, limit=3000, max_distance=12000000):
     # Assuming mongodb is running on 'localhost' with port 27017
-    c = connect_mongoclient(
-        host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
-    db = c["sncf"]
-    collection = db["stop_points"]
+    collection = get_collection("stop_points")
     # Get points in these bounds
     filter1 = {"geometry": {"$near": {"$geometry": {
         "type": "Point",  "coordinates": [float(lng), float(lat)]},
@@ -221,12 +216,10 @@ def query_mongo_near_stations(lat, lng, limit=3000, max_distance=12000000):
     return stop_points
 
 
-def insert_disruption_mongo(disruption, host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD):
+def insert_disruption_mongo(disruption):
     print("Saving disruption %s" % disruption["disruption_id"])
-    c = connect_mongoclient(
-        host=host, user=user, password=password)
-    db = c["sncf"]
-    collection = db["disruptions"]
+    collection = get_collection("disruptions")
+
     findquery = {"disruption_id": disruption["disruption_id"]}
     collection.update(findquery, disruption, upsert=True)
 
@@ -235,7 +228,7 @@ def query_and_save_disruptions(today=True):
     # Update data from API and save it in mongo
     client = Client(core_url="https://api.sncf.com/v1/",
                     user=SNCF_API_USER, region="sncf")
-    response = client.explore("disruptions", multipage=True, page_limit=300,
+    response = client.explore("disruptions", multipage=True, page_limit=30,
                               count_per_page=50, verbose=True)
     parsed = parser.RequestParser(response, "disruptions")
     print("Begin parsing")
@@ -249,7 +242,7 @@ def query_and_save_disruptions(today=True):
 
     # Initialize connection with MongoClient
     # Save elements
-    pool = Pool(30)
+    pool = Pool(3)
     pool.map(insert_disruption_mongo, disruptions_list)
     pool.join()
 
