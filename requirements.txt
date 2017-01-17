@@ -6,4 +6,4 @@ six==1.10.0
 navitia_client
 pandas
 numpy
-mysql-connector
+gevent
