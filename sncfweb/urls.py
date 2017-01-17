@@ -11,7 +11,3 @@ urlpatterns = [
     url(r'^monitoring/', include('monitoring.urls')),
 
 ]
-
-urlpatterns = [
-    url(r'^sncf/', include(urlpatterns)),
-]
