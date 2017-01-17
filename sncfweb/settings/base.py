@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'maps',
     'monitoring',
-    'django.contrib.gis',
+    #'django.contrib.gis',
     #'djangobower',
 ]
 
