@@ -13,5 +13,5 @@ urlpatterns = [
 ]
 
 urlpatterns = [
-    url(r'^sncf/', include(mypatterns)),
+    url(r'^sncf/', include(urlpatterns)),
 ]
