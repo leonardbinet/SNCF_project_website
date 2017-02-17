@@ -1,4 +1,27 @@
 # Deployment
+## If error:
+to see logs:
+```
+sudo tail -f /var/log/nginx/error.log
+sudo systemctl status gunicorn_sncf.service
+less /var/log/syslog
+
+
+```
+http://stackoverflow.com/questions/28689445/nginx-django-and-gunicorn-gunicorn-sock-file-is-missing
+```
+ps auxf | grep gunicorn
+grep init: /var/log/syslog
+
+```
+
+To restart
+```
+sudo systemctl daemon-reload
+sudo systemctl start gunicorn
+sudo systemctl enable gunicorn
+sudo systemctl restart nginx
+```
 
 # Ssh connection
 

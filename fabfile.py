@@ -92,7 +92,7 @@ def _set_nginx_service():
     # create path:
     # sudo('mkdir -p %s' % "/etc/nginx/sites-available")
     # create service
-    sudo("mv %s /etc/nginx/sites-available" % nginx_file_name)
+    sudo("mv %s %s" % (nginx_local_path, nginx_remote_path))
     # activate it with symbolic link (because it is present)
     with settings(warn_only=True):
         sudo("ln -s /etc/nginx/sites-available/%s /etc/nginx/sites-enabled" %

@@ -10,3 +10,4 @@ gevent
 ipdb
 djangorestframework
 boto3
+gunicorn
