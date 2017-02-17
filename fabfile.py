@@ -19,13 +19,13 @@ nginx_file_name = "sncf"
 # Do not touch
 site_folder = '~/sites/%s' % (PROJECT_NAME)
 source_folder = path.join(site_folder, 'source')
-deploy_folder = path.join(source_folder, 'deploy')
+deploy_folder = path.join(site_folder, 'deploy')
 
 gunicorn_remote_path = path.join("/etc/systemd/system/", gunicorn_file_name)
 gunicorn_local_path = path.join("../deploy", gunicorn_file_name)
 
 nginx_remote_path = path.join("/etc/nginx/sites-available", nginx_file_name)
-nginx_local_path = path.join("../deploy", nginx_file_name)
+nginx_local_path = path.join(deploy_folder, nginx_file_name)
 
 
 def deploy():
@@ -97,8 +97,8 @@ def _set_nginx_service():
     put(nginx_local_path, "/etc/nginx/sites-available", use_sudo=True)
     # activate it with symbolic link (because it is present)
     with settings(warn_only=True):
-        sudo("ln -s /etc/nginx/sites-available/%s/etc/nginx/sites-enabled" %
-             PROJECT_NAME)
+        sudo("ln -s /etc/nginx/sites-available/%s /etc/nginx/sites-enabled" %
+             nginx_file_name)
     # remove default server nginx:
     with settings(warn_only=True):
         sudo("rm /etc/nginx/sites-enabled/default")
