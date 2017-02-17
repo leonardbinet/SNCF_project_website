@@ -14,7 +14,7 @@ except:
     print("No file")
 
 
-def get_secret(setting, my_secrets=secrets, env=False):
+def get_secret(setting, my_secrets=secrets, env=True):
     try:
         value = my_secrets[setting]
         # set as environment variable
