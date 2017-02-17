@@ -11,15 +11,13 @@ REPO_URL = 'https://github.com/leonardbinet/SNCF_project_website.git'
 PROJECT_NAME = "sncf"
 SECRET_PATH = "sncfweb/settings/secret.json"
 
-site_folder = '~/sites/%s' % (PROJECT_NAME)
-source_folder = site_folder + '/source'
 gunicorn_file_name = "gunicorn_sncf.service"
 nginx_file_name = "sncf"
 
 # Do not touch
 site_folder = '~/sites/%s' % (PROJECT_NAME)
 source_folder = path.join(site_folder, 'source')
-deploy_folder = path.join(site_folder, 'deploy')
+deploy_folder = path.join(source_folder, 'deploy')
 
 gunicorn_remote_path = path.join("/etc/systemd/system/", gunicorn_file_name)
 gunicorn_local_path = path.join(deploy_folder, gunicorn_file_name)
