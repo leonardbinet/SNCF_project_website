@@ -83,7 +83,7 @@ def _update_database(source_folder):
 
 def _set_gunicorn_service():
     # first create gunicorn service file
-    put(gunicorn_local_path, gunicorn_remote_path, use_sudo=True)
+    sudo("mv %s %s" % (gunicorn_local_path, gunicorn_remote_path))
     # then activate it
     sudo("systemctl start %s" % gunicorn_file_name.split(".")[0])
     sudo("systemctl enable %s" % gunicorn_file_name.split(".")[0])
@@ -94,7 +94,7 @@ def _set_nginx_service():
     # create path:
     # sudo('mkdir -p %s' % "/etc/nginx/sites-available")
     # create service
-    put(nginx_local_path, "/etc/nginx/sites-available", use_sudo=True)
+    sudo("mv %s /etc/nginx/sites-available" % nginx_file_name)
     # activate it with symbolic link (because it is present)
     with settings(warn_only=True):
         sudo("ln -s /etc/nginx/sites-available/%s /etc/nginx/sites-enabled" %
