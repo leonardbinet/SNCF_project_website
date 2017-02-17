@@ -2,30 +2,13 @@
 
 import os
 import json
+from .secrets import get_secret
 
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 
 ENV_DIR = os.path.dirname(BASE_DIR)
 
-
-# SECRETS NOT SAVED IN VCS
-try:
-    with open(os.path.join(BASE_DIR, 'sncfweb/settings/secret.json')) as secrets_file:
-        secrets = json.load(secrets_file)
-except:
-    secrets = {}
-    print("No file")
-
-
-def get_secret(setting, my_secrets=secrets):
-    try:
-        value = my_secrets[setting]
-        # set as environment variable
-        os.environ[setting] = value
-        return my_secrets[setting]
-    except KeyError:
-        print("Impossible to get " + setting)
 
 SNCF_API_USER = get_secret("SNCF_API_USER")
 
@@ -54,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'maps',
     'monitoring',
+    'rest_framework',
+
     #'django.contrib.gis',
     #'djangobower',
 ]

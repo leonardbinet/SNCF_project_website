@@ -1,5 +1,3 @@
-from gevent import monkey
-monkey.patch_all()
 
 from . import parser
 import os

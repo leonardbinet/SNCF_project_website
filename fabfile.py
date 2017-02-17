@@ -20,7 +20,7 @@ def deploy():
     _send_secret_json()
     _update_virtualenv(source_folder)
     _update_static_files(source_folder)
-    _update_database(source_folder)
+    #_update_database(source_folder)
 
 
 def _send_secret_json():
