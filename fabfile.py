@@ -22,7 +22,7 @@ source_folder = path.join(site_folder, 'source')
 deploy_folder = path.join(site_folder, 'deploy')
 
 gunicorn_remote_path = path.join("/etc/systemd/system/", gunicorn_file_name)
-gunicorn_local_path = path.join("../deploy", gunicorn_file_name)
+gunicorn_local_path = path.join(deploy_folder, gunicorn_file_name)
 
 nginx_remote_path = path.join("/etc/nginx/sites-available", nginx_file_name)
 nginx_local_path = path.join(deploy_folder, nginx_file_name)
