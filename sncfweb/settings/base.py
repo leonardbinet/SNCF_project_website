@@ -60,7 +60,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'sncfweb/templates'),
-            os.path.join(BASE_DIR, 'maps/templates')
+            os.path.join(BASE_DIR, 'maps/templates'),
+            os.path.join(BASE_DIR, 'project_api/templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {

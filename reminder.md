@@ -1,4 +1,33 @@
 # Deployment
+
+## Create a Gunicorn systemd Service File
+```
+sudo nano /etc/systemd/system/gunicorn_sncf.service
+```
+
+```
+sudo systemctl start gunicorn_sncf
+sudo systemctl enable gunicorn_sncf
+sudo systemctl status gunicorn_sncf.service
+
+```
+
+## Configure Nginx to Proxy Pass to Gunicorn
+
+```
+sudo nano /etc/nginx/sites-available/us_election
+```
+
+```
+sudo ln -s /etc/nginx/sites-available/sncf_web_project /etc/nginx/sites-enabled
+sudo nginx -t
+sudo systemctl restart nginx
+
+sudo ufw delete allow 8000
+sudo ufw allow 'Nginx Full'
+```
+
+
 ## If error:
 to see logs:
 ```
@@ -18,8 +47,8 @@ grep init: /var/log/syslog
 To restart
 ```
 sudo systemctl daemon-reload
-sudo systemctl start gunicorn
-sudo systemctl enable gunicorn
+sudo systemctl start gunicorn_sncf
+sudo systemctl enable gunicorn_sncf
 sudo systemctl restart nginx
 ```
 
