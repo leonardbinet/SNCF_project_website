@@ -87,7 +87,8 @@ def check_dynamo_connection():
             "tables_stats": tables_stats,
         }
         status = True
-    except KeyError as e:
+    except Exception as e:
         # Status stays False
-        add_info = None
+        add_info = e
+        return True, e
     return status, add_info
