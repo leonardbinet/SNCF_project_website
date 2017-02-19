@@ -1,13 +1,11 @@
 function checkMongoConnection(callback) {
     $.getJSON(mongo_ajax_url,
         updateHtmlMongo);
-    callback();
 }
 
 function checkDynamoConnection(callback) {
     $.getJSON(dynamo_ajax_url,
         updateHtmlDynamo);
-    callback();
 }
 
 function updateHtmlMongo(response){
@@ -45,6 +43,8 @@ function updateHtmlMongo(response){
         createDiv(databaseName, "#"+db+"_div");
         showStats(databaseName,databaseData,"collections");
     }
+    $('#mongo-refresh').button('reset');
+
 }
 
 function updateHtmlDynamo(response){
@@ -75,6 +75,9 @@ function updateHtmlDynamo(response){
     var newDiv = "<h3> Database: dynamo</h3><div id='dynamo' style='height: 250px;'></div>";
     $("#dynamo_div").append(newDiv)
     showStats("dynamo",databaseData, "table");
+
+    $('#dynamo-refresh').button('reset');
+
 }
 
 
@@ -93,3 +96,14 @@ function showStats(databaseName,databaseData, xkey){
       labels: ['Count']
     });
 }
+
+
+$('#mongo-refresh').on('click', function () {
+    var btn = $(this).button('loading');
+    checkMongoConnection();
+    });
+
+$('#dynamo-refresh').on('click', function () {
+    var btn = $(this).button('loading');
+    checkDynamoConnection();
+    });

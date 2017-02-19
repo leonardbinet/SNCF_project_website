@@ -89,20 +89,5 @@ var dynamo_ajax_url = "{% url 'ajax_monitoring_dynamo_db' %}";
 
 <script src="{% static 'monitoring.js' %}"></script>
 
-<script>
-  $('#mongo-refresh').on('click', function () {
-    var btn = $(this).button('loading');
-    function resetButton(){btn.button('reset');}
-    checkMongoConnection(resetButton);
-});
-
-$('#dynamo-refresh').on('click', function () {
-  var btn = $(this).button('loading');
-  function resetButton(){btn.button('reset');}
-  checkDynamoConnection(resetButton);
-});
-
-
-</script>
 
 {% endblock %}

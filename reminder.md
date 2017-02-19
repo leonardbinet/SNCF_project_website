@@ -66,51 +66,6 @@ eb init -p python3.4 sncfweb
 
 eb create sncfweb-env
 ```
-For security reasons, secret files on not known by the VCS. So when deploying my app with AWS EB, I need to get the secret file from a S3 instance.
-http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/https-storingprivatekeys.html
-
-More information:
-https://realpython.com/blog/python/deploying-a-django-app-to-aws-elastic-beanstalk/
-
-# API credentials
-SNCF API
-
-TRANSILIEN API
-
-NAVITIA API
-
-# Databases
-Needs one Postrgres and one Mongo.
-
-## Postrgres requirements
-You have to set up a Postrgres DB, and either:
-- set environments variables for connection:
-    - POSTRES_HOST
-    - POSTRES_PORT
-    - POSTRES_USER
-    - POSTRES_DBNAME
-    - POSTRES_PASSWORD
-
-- OR write these variables in a JSON file in sncfweb/settings/secret.json:
-
-# Python 3
-sudo curl -O https://bootstrap.pypa.io/get-pip.py
-sudo python3 get-pip.py
-pip3 install --user -r requirements.txt
-
-## Secrets
-
-
-ssh -i "/Users/leonardbinet/.ssh/aws-eb2" ec2-user@ec2-54-154-171-111.eu-west-1.compute.amazonaws.com
-
-sudo chmod 777 settings
-
-scp -i "/Users/leonardbinet/.ssh/aws-eb2" secret.json ec2-user@ec2-54-154-171-111.eu-west-1.compute.amazonaws.com:
-ssh -i "/Users/leonardbinet/.ssh/aws-eb2" ec2-user@ec2-54-154-171-111.eu-west-1.compute.amazonaws.com
-
-sudo mv secret.json /opt/python/current/app/sncfweb/settings
-
-sudo chmod 777 secret.json
 
 ## Wsgi
 sudo chmod a+x wsgi.py

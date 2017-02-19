@@ -90,5 +90,4 @@ def check_dynamo_connection():
     except Exception as e:
         # Status stays False
         add_info = e
-        return True, e
     return status, add_info
