@@ -45,7 +45,7 @@ def _send_secret_json():
 
 
 def _create_directory_structure_if_necessary(site_folder):
-    for subfolder in ('database', 'static', 'virtualenv', 'source'):
+    for subfolder in ('database', 'static', 'virtualenv', 'source', 'logs'):
         run('mkdir -p %s/%s' % (site_folder, subfolder))
 
 
