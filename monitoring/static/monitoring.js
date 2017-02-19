@@ -1,12 +1,24 @@
-// First check MongoDB connection
+function checkMongoConnection(callback) {
+    $.getJSON(mongo_ajax_url,
+        updateHtmlMongo);
+    callback();
+}
 
+function checkDynamoConnection(callback) {
+    $.getJSON(dynamo_ajax_url,
+        updateHtmlDynamo);
+    callback();
+}
 
-function updateHtml(response){
+function updateHtmlMongo(response){
+    var db = "mongo";
     var status = response['status'];
     var add_info = response['add_info'];
     var printed_info = "Databases available: "+JSON.stringify(add_info['database_names'])
+
     var buttonClass;
     var faviconClass;
+
     if (status==true) {
         buttonClass="btn btn-success btn-circle btn-lg";
         faviconClass="fa fa-check";}
@@ -17,61 +29,67 @@ function updateHtml(response){
     else {
         buttonClass="btn";
     }
-    $("#mongo-status-circle").attr('class', buttonClass);
-    $("#mongo-status-fa").attr('class', faviconClass);
-    $("#mongo-add-info").html(printed_info);
+    $("#"+db+"-status-circle").attr('class', buttonClass);
+    $("#"+db+"-status-fa").attr('class', faviconClass);
+    $("#"+db+"-add-info").html(printed_info);
 
     // Now create divs and display bars
 
     var databasesStats = response['add_info']['databases_stats'];
     var arrayLength = databasesStats.length;
     // clear div if needed
-    $("#databases_stats").empty();
+    $("#"+db+"_div").empty();
     for (var i = 0; i < arrayLength; i++) {
         var databaseName = databasesStats[i]["database"];
         var databaseData = databasesStats[i]["collections"];
-        createDiv(databaseName);
-        showMongoCollStats(databaseName,databaseData);
+        createDiv(databaseName, "#"+db+"_div");
+        showStats(databaseName,databaseData,"collections");
     }
 }
 
-function checkMongoConnection(callback) {
-    $.getJSON(mongo_ajax_url,
-        {
-            connection_id : "connection_id"
-        },
-        updateHtml);
+function updateHtmlDynamo(response){
+    var db = "dynamo";
+    var status = response['status'];
+    var add_info = response['add_info'];
+    var printed_info = JSON.stringify(add_info['tables_desc']);
 
-    callback();
+    var buttonClass;
+    var faviconClass;
 
+    if (status==true) {
+        buttonClass="btn btn-success btn-circle btn-lg";
+        faviconClass="fa fa-check";}
+    else if (status==false) {
+        buttonClass="btn btn-danger btn-circle btn-lg";
+        faviconClass="fa fa-times";}
+
+    else {
+        buttonClass="btn";
+    }
+    $("#"+db+"-status-circle").attr('class', buttonClass);
+    $("#"+db+"-status-fa").attr('class', faviconClass);
+    $("#"+db+"-add-info").html(printed_info);
+
+    // Now create divs and display bars
+    var databaseData = response['add_info']['tables_stats'];
+    var newDiv = "<h3> Database: dynamo</h3><div id='dynamo' style='height: 250px;'></div>";
+    $("#dynamo_div").append(newDiv)
+    showStats("dynamo",databaseData, "table");
 }
 
-function createDiv(databaseName){
+
+
+function createDiv(databaseName, dbId){
     var newDiv = "<h3> Database: "+databaseName+"</h3><div id='"+databaseName+"' style='height: 250px;'></div>";
-    $("#databases_stats").append(newDiv)
+    $(dbId).append(newDiv)
 }
 
-function showMongoCollStats(databaseName,databaseData){
-Morris.Bar({
-  element: databaseName,
-  data: databaseData,
-  xkey: 'collection',
-  ykeys: ['count'],
-  labels: ['Count']
-});
+function showStats(databaseName,databaseData, xkey){
+    Morris.Bar({
+      element: databaseName,
+      data: databaseData,
+      xkey: xkey,
+      ykeys: ['count'],
+      labels: ['Count']
+    });
 }
-
-/*
-Morris.Bar({
-  element: databaseName,
-  data: [
-    { col: 'stat', count: 75},
-    { col: 'disruptions', count: 40},
-    { col: 'new', count: 24},
-    { col: 'other', count: 75},
-  ],
-  xkey: 'col',
-  ykeys: ['count'],
-  labels: ['Count']
-});
-*/

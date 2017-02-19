@@ -32,11 +32,10 @@ def connect_mongoclient(host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWOR
     return client
 
 
-def check_mongo_connection(host, user=None, password=None, port=None, database=None, max_delay=500):
+def check_mongo_connection(max_delay=500):
 
     status = False
-    client = connect_mongoclient(host, user=user, password=password,
-                                 port=port, database=database, max_delay=max_delay)
+    client = connect_mongoclient(max_delay=max_delay)
     try:
         server_info = client.server_info()
         database_names = client.database_names()

@@ -27,11 +27,10 @@
             <!-- /.panel -->
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    DataBases Connection Status
+                    MongoDB
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
-                    <h4>MongoDB</h4>
                     <button id="mongo-refresh" data-loading-text="Loading..." type="button" class="btn btn-primary" autocomplete="off" >Check connection</button>
                     <button id="mongo-status-circle" type="button" class="btn btn-warning btn-circle btn-lg"><i id="mongo-status-fa" class="fa fa-question"></i>
                     </button>
@@ -41,7 +40,30 @@
                     <p id="mongo-add-info">
                     None
                     </p>
-                    <div id="databases_stats"></div>
+                    <div id="mongo_div"></div>
+                </div>
+
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Dynamo
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <button id="dynamo-refresh" data-loading-text="Loading..." type="button" class="btn btn-primary" autocomplete="off" >Check connection</button>
+                    <button id="dynamo-status-circle" type="button" class="btn btn-warning btn-circle btn-lg"><i id="dynamo-status-fa" class="fa fa-question"></i>
+                    </button>
+                    <br>
+                    <div id="dynamo_div"></div>
+                    <br>
+                    <b>Additionnal information:</b>
+                    <p id="dynamo-add-info">
+                    None
+                    </p>
                 </div>
 
                 <!-- /.panel-body -->
@@ -60,7 +82,10 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
 <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
-<script>var mongo_ajax_url = "{% url 'ajax_monitoring_mongo_db' %}";</script>
+<script>
+var mongo_ajax_url = "{% url 'ajax_monitoring_mongo_db' %}";
+var dynamo_ajax_url = "{% url 'ajax_monitoring_dynamo_db' %}";
+</script>
 
 <script src="{% static 'monitoring.js' %}"></script>
 
@@ -71,7 +96,12 @@
     checkMongoConnection(resetButton);
 });
 
-showMongoCollStats();
+$('#dynamo-refresh').on('click', function () {
+  var btn = $(this).button('loading');
+  function resetButton(){btn.button('reset');}
+  checkDynamoConnection(resetButton);
+});
+
 
 </script>
 

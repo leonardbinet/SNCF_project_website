@@ -63,3 +63,31 @@ def dynamo_get_trains_in_station(station, day=None, max_req=100):
         data.extend(response['Items'])
         max_req -= 1
     return data
+
+
+def check_dynamo_connection():
+    status = False
+    try:
+        client = dynamo_get_client()
+        tables_names = client.list_tables()["TableNames"]
+
+        tables_stats = []
+        tables_desc = {}
+        for table_name in tables_names:
+            table_desc = client.describe_table(TableName=table_name)
+            tables_desc[table_name] = table_desc
+            table_stat = {
+                "table": table_name,
+                "count": table_desc["Table"]["ItemCount"]
+            }
+            tables_stats.append(table_stat)
+
+        add_info = {
+            "tables_desc": tables_desc,
+            "tables_stats": tables_stats,
+        }
+        status = True
+    except KeyError as e:
+        # Status stays False
+        add_info = None
+    return status, add_info
