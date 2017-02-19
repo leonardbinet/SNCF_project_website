@@ -6,7 +6,7 @@ After=network.target
 User=ubuntu
 Group=www-data
 WorkingDirectory=/home/ubuntu/sites/sncf/source
-ExecStart=/home/ubuntu/sites/sncf/virtualenv/bin/gunicorn --workers 3 --bind 127.0.0.1:8887 sncfweb.wsgi:application
+ExecStart=/home/ubuntu/sites/sncf/virtualenv/bin/gunicorn --log-file gunicornlogs.txt --workers 3 --bind 127.0.0.1:8887 sncfweb.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
