@@ -35,7 +35,7 @@ def deploy():
     _update_static_files(source_folder)
     _set_gunicorn_service()
     _set_nginx_service()
-    _restart_all()
+    restart_all()
     #_update_database(source_folder)
 
 
@@ -104,7 +104,7 @@ def _set_nginx_service():
     sudo("systemctl restart nginx")
 
 
-def _restart_all():
+def restart_all():
     sudo("systemctl daemon-reload")
     sudo("systemctl start " + gunicorn_file_name.split(".")[0])
     sudo("systemctl enable " + gunicorn_file_name.split(".")[0])

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+<!-- Balise title <60 caractères -->
+{% block title %}
+<title>Home</title>
+{% endblock %}
+
+{% block header_up %}
+
+{% endblock %}
+
+{% block content %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Project's API</h1>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2>Overview</h2>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <p>
+                        You can currently query on given station, on given day (today if not specified) at what time trains really departed, with which delay, and at what time are next trains expected to arrive based on what is displayed on information boards: <a href="{% url 'api_station' %}?station_id=8727622&day=20170216"> click here to access to see an example</a>
+
+
+                    </p>
+                    <p>
+                        To access it: <a href="{% url 'api_station' %}"> api/station/ </a>
+                    </br>
+
+                    With parameters:
+                    <ul>
+                        <li>
+                            Required: station_id: in a 7 digits format, for instance, station_id=8727622
+                        </li>
+                        <li>
+                            Optional: day: in a yyyymmdd format, for instance, day=20170217. If not specified, today. 
+                        </li>
+                    </ul>
+                    </p>
+
+                </div>
+
+                <!-- /.panel-body -->
+            </div>
+
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+
+</div>
+{% endblock %}
+
+{% block body_tail %}
+
+{% endblock %}

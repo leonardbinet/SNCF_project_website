@@ -43,16 +43,18 @@ def dynamo_get_trains_in_station(station, day=None, max_req=100):
     Reminder: hash key: station_id
     sort key: day_train_num
     """
+    if not day:
+        paris_date = get_paris_local_datetime_now()
+        day = paris_date.strftime("%Y%m%d")
+
     table_name = dynamo_real_dep
-    paris_date = get_paris_local_datetime_now()
-    paris_date_str = paris_date.strftime("%Y%m%d")
 
     # Query
     table = dynamo_get_table(table_name)
     response = table.query(
         ConsistentRead=False,
         KeyConditionExpression=Key('station_id').eq(
-            str(station)) & Key('day_train_num').begins_with(paris_date_str)
+            str(station)) & Key('day_train_num').begins_with(day)
     )
     data = response['Items']
 
