@@ -1,25 +1,23 @@
 
 from . import parser
 import os
-from monitoring.utils import connect_mongoclient
+from sncfweb.utils_mongo import connect_mongoclient
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from navitia_client import Client
 from gevent.pool import Pool
 import ipdb
 import pandas as pd
+from sncfweb.settings.secrets import get_secret
 
-MONGO_USER = os.environ["MONGO_USER"]
-MONGO_HOST = os.environ["MONGO_HOST"]
-MONGO_PASSWORD = os.environ["MONGO_PASSWORD"]
+MONGO_DB_NAME = get_secret("MONGO_DB_NAME")
 
-SNCF_API_USER = os.environ["SNCF_API_USER"]
+SNCF_API_USER = get_secret("SNCF_API_USER")
 
 
 def get_collection(collection):
-    c = connect_mongoclient(
-        host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD)
-    db = c["sncf"]
+    c = connect_mongoclient()
+    db = c[MONGO_DB_NAME]
     collection = db[collection]
     return collection
 

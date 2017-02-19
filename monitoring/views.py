@@ -1,6 +1,6 @@
 import os
 from django.shortcuts import render
-from monitoring.utils import check_mongo_connection
+from sncfweb.utils_mongo import check_mongo_connection
 from django.http import JsonResponse
 
 MONGO_USER = os.environ["MONGO_USER"]

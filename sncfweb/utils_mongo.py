@@ -1,7 +1,9 @@
+import os
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 import pymongo
 from navitia_client import Client
+from sncfweb.settings.secrets import get_secret
 
 try:
     # Python 3.x
@@ -11,7 +13,12 @@ except ImportError:
     from urllib import quote_plus
 
 
-def connect_mongoclient(host, user=None, password=None, port=None, database=None, max_delay=15000):
+MONGO_USER = get_secret("MONGO_USER")
+MONGO_HOST = get_secret("MONGO_HOST")
+MONGO_PASSWORD = get_secret("MONGO_PASSWORD")
+
+
+def connect_mongoclient(host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD, port=None, database=None, max_delay=15000):
     # Build URI
     uri = "mongodb://"
     if user and password:
