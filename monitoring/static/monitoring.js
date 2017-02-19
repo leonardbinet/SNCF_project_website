@@ -41,7 +41,7 @@ function updateHtmlMongo(response){
         var databaseName = databasesStats[i]["database"];
         var databaseData = databasesStats[i]["collections"];
         createDiv(databaseName, "#"+db+"_div");
-        showStats(databaseName,databaseData,"collections");
+        showStats(databaseName,databaseData,"collection");
     }
     $('#mongo-refresh').button('reset');
 
