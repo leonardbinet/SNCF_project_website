@@ -5,7 +5,6 @@
 *.DS_Store
 
 # Bower
-sncfweb/static/bower_components/*
 components/*
 
 # Secrets

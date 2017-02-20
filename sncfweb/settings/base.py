@@ -38,9 +38,7 @@ INSTALLED_APPS = [
     'maps',
     'monitoring',
     'rest_framework',
-
-    #'django.contrib.gis',
-    #'djangobower',
+    'djangobower',
 ]
 
 MIDDLEWARE = [
@@ -154,5 +152,6 @@ BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
 
 BOWER_INSTALLED_APPS = (
     'jquery',
-    'bootstrap'
+    'bootstrap',
+    'BlackrockDigital/startbootstrap-sb-admin-2'
 )
