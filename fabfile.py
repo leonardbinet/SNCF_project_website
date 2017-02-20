@@ -68,6 +68,7 @@ def _update_virtualenv(source_folder):
 
 
 def _update_static_files(source_folder):
+    _install_npm_bower()
     run('cd %s && ../virtualenv/bin/python3 manage.py bower install' %
         source_folder)
     run('cd %s && ../virtualenv/bin/python3 manage.py collectstatic --noinput' %
@@ -110,3 +111,9 @@ def restart_all():
     sudo("systemctl start " + gunicorn_file_name.split(".")[0])
     sudo("systemctl enable " + gunicorn_file_name.split(".")[0])
     sudo("systemctl restart nginx")
+
+
+def _install_npm_bower():
+    sudo("curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -")
+    sudo("apt-get install -y nodejs")
+    sudo("npm install -g bower")
