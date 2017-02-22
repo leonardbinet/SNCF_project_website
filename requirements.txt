@@ -6,7 +6,6 @@ six==1.10.0
 navitia_client
 pandas
 numpy
-ipdb
 djangorestframework
 boto3
 gunicorn
