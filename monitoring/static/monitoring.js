@@ -51,7 +51,7 @@ function updateHtmlDynamo(response){
     var db = "dynamo";
     var status = response['status'];
     var add_info = response['add_info'];
-    var printed_info = JSON.stringify(add_info['tables_desc']);
+    var printed_info = "<p>"+JSON.stringify(add_info['tables_desc'])+"</p>";
 
     var buttonClass;
     var faviconClass;

@@ -5,7 +5,8 @@ import random
 from os import path
 
 env.key_filename = "~/.ssh/aws-eb2"
-# fab deploy:host=ubuntu@ec2-54-194-138-195.eu-west-1.compute.amazonaws.com
+# fab deploy:host=ubuntu@34.251.111.102
+# ssh -i "~/.ssh/aws-eb2" ubuntu@34.251.111.102
 
 REPO_URL = 'https://github.com/leonardbinet/SNCF_project_website.git'
 PROJECT_NAME = "sncf"
@@ -26,8 +27,12 @@ nginx_remote_path = path.join("/etc/nginx/sites-available", nginx_file_name)
 nginx_local_path = path.join(deploy_folder, nginx_file_name)
 
 
-def deploy():
+def initial_deploy():
+    _install_npm_bower()
+    deploy()
 
+
+def deploy():
     _create_directory_structure_if_necessary(site_folder)
     _get_latest_source(source_folder)
     _send_secret_json()
@@ -68,7 +73,6 @@ def _update_virtualenv(source_folder):
 
 
 def _update_static_files(source_folder):
-    _install_npm_bower()
     run('cd %s && ../virtualenv/bin/python3 manage.py bower install' %
         source_folder)
     run('cd %s && ../virtualenv/bin/python3 manage.py collectstatic --noinput' %
