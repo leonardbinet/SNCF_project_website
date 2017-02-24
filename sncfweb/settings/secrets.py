@@ -15,11 +15,22 @@ except:
 
 
 def get_secret(setting, my_secrets=secrets, env=True):
+    """
+    Tries to find secrets either in secret file, or in environment variables. Secret file > env
+    Then, set it as environment variable and returns value.
+    """
+    value = None
+    try:
+        value = os.environ[setting]
+    except KeyError:
+        print("Impossible to get %s from environment" % setting)
     try:
         value = my_secrets[setting]
-        # set as environment variable
-        if env:
-            os.environ[setting] = value
-        return my_secrets[setting]
     except KeyError:
-        print("Impossible to get " + setting)
+        print("Impossible to get %s from file" % setting)
+
+    if value:
+        os.environ[setting] = value
+        return my_secrets[setting]
+    else:
+        print("%s not found." % setting)
