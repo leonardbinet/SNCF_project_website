@@ -8,7 +8,7 @@
 
 {% block header_tail %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-<link rel="stylesheet" href="{% static 'custom.css' %}" />
+<link rel="stylesheet" href="{% static 'maps/custom.css' %}" />
 <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
 
 <!--Leaflet markercluster -->
@@ -50,13 +50,13 @@
 
 {% block body_tail %}
 <script>
-var ajaxsationsurl = "{% url 'ajax_stop_points' %}";
-var ajaxdisruptionsurl = "{% url 'ajax_disruptions' %}";
-var update_disruptions_url = "{% url 'update_disruptions' %}";
+var ajaxsationsurl = "{% url 'maps/ajax_stop_points' %}";
+var ajaxdisruptionsurl = "{% url 'maps/ajax_disruptions' %}";
+var update_disruptions_url = "{% url 'maps/update_disruptions' %}";
 
 </script>
-<script src="{% static 'ajaxmap.js' %}"></script>
-<script src="{% static 'map_update.js' %}"></script>
+<script src="{% static 'maps/ajaxmap.js' %}"></script>
+<script src="{% static 'maps/map_update.js' %}"></script>
 
 <script>
   $('#refresh_disruptions').on('click', function () {
