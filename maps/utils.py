@@ -5,8 +5,6 @@ from sncfweb.utils_mongo import connect_mongoclient
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from navitia_client import Client
-from gevent.pool import Pool
-import ipdb
 import pandas as pd
 from sncfweb.settings.secrets import get_secret
 
