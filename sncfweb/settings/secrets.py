@@ -24,6 +24,10 @@ def get_secret(setting, my_secrets=secrets, env=True):
         value = os.environ[setting]
     except KeyError:
         print("Impossible to get %s from environment" % setting)
+    if value:
+        os.environ[setting] = value
+        return value
+
     try:
         value = my_secrets[setting]
     except KeyError:
@@ -31,6 +35,6 @@ def get_secret(setting, my_secrets=secrets, env=True):
 
     if value:
         os.environ[setting] = value
-        return my_secrets[setting]
+        return value
     else:
         print("%s not found." % setting)
