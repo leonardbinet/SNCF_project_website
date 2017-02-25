@@ -7,7 +7,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(
 
 # SECRETS NOT SAVED IN VCS
 try:
-    with open(os.path.join(BASE_DIR, 'sncfweb/settings/secret.json')) as secrets_file:
+    with open(os.path.join(BASE_DIR, 'secret.json')) as secrets_file:
         secrets = json.load(secrets_file)
 except:
     secrets = {}

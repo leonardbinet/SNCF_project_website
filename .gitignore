@@ -8,7 +8,7 @@
 components/*
 
 # Secrets
-sncfweb/settings/secret.json
+secret.json
 .ebextensions/02_secrets.config
 
 # Elastic Beanstalk Files
