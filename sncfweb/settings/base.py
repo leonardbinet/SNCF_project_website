@@ -149,7 +149,7 @@ BOWER_INSTALLED_APPS = (
 
 LOGS_FILE = os.environ.get('logs_directory', None)
 if not LOGS_FILE:
-    LOGS_FILE = path.join(BASE_DIR, "..", "/logs")
+    LOGS_FILE = path.abspath(path.join(BASE_DIR, "..", "/logs"))
 
 LOGGING = {
     'version': 1,
