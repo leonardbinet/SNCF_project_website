@@ -1,30 +1,17 @@
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 import os
-import json
-from .secrets import get_secret
+from sncfweb.settings.secrets import get_secret
+import logging
+import sys
+from os import path
 
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 
 ENV_DIR = os.path.dirname(BASE_DIR)
 
-
-SNCF_API_USER = get_secret("SNCF_API_USER")
-
-MONGO_USER = get_secret('MONGO_USER')
-MONGO_HOST = get_secret('MONGO_HOST')
-MONGO_PASSWORD = get_secret('MONGO_PASSWORD')
-# MONGO_PORT = int(get_secret('MONGOPORT'))
-
 SECRET_KEY = get_secret('SECRET_KEY')
-
-DJANGO_DB_HOST = get_secret('DJANGO_DB_HOST')
-DJANGO_DB_PORT = get_secret('DJANGO_DB_PORT')
-DJANGO_DB_USER = get_secret('DJANGO_DB_USER')
-DJANGO_DB_PASSWORD = get_secret('DJANGO_DB_PASSWORD')
-DJANGO_DB_NAME = get_secret('DJANGO_DB_NAME')
-
 
 ALLOWED_HOSTS = ['*']
 
@@ -144,7 +131,7 @@ STATICFILES_DIRS = [
 # stocke dans un répertoire un niveau au dessus puis dans static
 STATIC_ROOT = os.environ.get('static', None)
 if not STATIC_ROOT:
-    STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '../static'))
+    STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', '/static'))
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -152,7 +139,7 @@ STATICFILES_FINDERS = [
     'djangobower.finders.BowerFinder',
 ]
 
-BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
+BOWER_COMPONENTS_ROOT = path.join(BASE_DIR, 'components')
 
 BOWER_INSTALLED_APPS = (
     'jquery',
@@ -160,7 +147,9 @@ BOWER_INSTALLED_APPS = (
     'BlackrockDigital/startbootstrap-sb-admin-2'
 )
 
-LOGS_FILE = "../logs"
+LOGS_FILE = os.environ.get('logs_directory', None)
+if not LOGS_FILE:
+    LOGS_FILE = path.join(BASE_DIR, "..", "/logs")
 
 LOGGING = {
     'version': 1,
@@ -192,3 +181,14 @@ LOGGING = {
         },
     },
 }
+
+
+# Python crashes or captured as well (beware of ipdb imports)
+def handle_exception(exc_type, exc_value, exc_traceback):
+    # if issubclass(exc_type, KeyboardInterrupt):
+    #    sys.__excepthook__(exc_type, exc_value, exc_traceback)
+    logging.error("Uncaught exception : ", exc_info=(
+        exc_type, exc_value, exc_traceback))
+    sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+sys.excepthook = handle_exception
