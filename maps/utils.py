@@ -7,9 +7,9 @@ from pymongo import MongoClient
 from navitia_client import Client
 import pandas as pd
 from sncfweb.settings.secrets import get_secret
+from multiprocessing.dummy import Pool
 
 MONGO_DB_NAME = get_secret("MONGO_DB_NAME")
-
 SNCF_API_USER = get_secret("SNCF_API_USER")
 
 
@@ -232,7 +232,6 @@ def query_and_save_disruptions(today=True):
 
     # Filter only today disruptions
     df = pd.DataFrame(disruptions_list)
-    ipdb.set_trace()
 
     # Initialize connection with MongoClient
     # Save elements
