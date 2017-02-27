@@ -179,7 +179,18 @@ LOGGING = {
 }
 
 
+# Endroit ou ce sera stocké sur le serveur
+# Soit cela est spécifié dans les variables d'environnment, soit on le
+# stocke dans un répertoire un niveau au dessus puis dans static
+STATIC_ROOT = os.environ.get('static', None)
+if not STATIC_ROOT:
+    STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'static'))
+
+WSGI_APPLICATION = 'sncfweb.wsgi.application'
+
 # Python crashes or captured as well (beware of ipdb imports)
+
+
 def handle_exception(exc_type, exc_value, exc_traceback):
     # if issubclass(exc_type, KeyboardInterrupt):
     #    sys.__excepthook__(exc_type, exc_value, exc_traceback)
