@@ -8,23 +8,26 @@ This website was developed for a project with SNCF's R&D department:
 - to make databases (Mongo and Dynamo) status available
 
 This repository is only one of the project's repositories. You can find:
-- a repository with Vagrant and Salt files used to automate deployment
-- a repository with the application used to extract/transform/load data from transilien's API into Mongo and Dynamos databases
+- a repository with Vagrant and Salt files used to automate deployment, [here](https://github.com/leonardbinet/Salt-Vagrant-master-mode).
+- a repository with the application used to extract/transform/load data from transilien's API into Mongo and Dynamos databases, [here](https://github.com/leonardbinet/Transilien-Api-ETL).
 
 
 
-## Architecture for maps application only
-![Architecture](documentation/images/architecture2.png)
 
-## Leaflet
-http://leafletjs.com/reference-1.0.2.html
+
+
 
 ## How it looks
+![monitoring](documentation/images/monitoring.png)
+
+![api](documentation/images/api.png)
+
 ![stations](documentation/images/stations.png)
 
 ![disruptions](documentation/images/disruption_focus.png)
 
-![control](documentation/images/map_control.png)
+![documentation](documentation/images/documentation.png)
+
 
 ## Annexe
 http://doc.navitia.io/#public-transport-objects
