@@ -6,6 +6,7 @@
 
 # Bower
 components/*
+bower_components/*
 
 # Secrets
 secret.json

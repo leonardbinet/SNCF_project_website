@@ -126,12 +126,6 @@ STATICFILES_DIRS = [
 
 ]
 
-# Endroit ou ce sera stocké sur le serveur
-# Soit cela est spécifié dans les variables d'environnment, soit on le
-# stocke dans un répertoire un niveau au dessus puis dans static
-STATIC_ROOT = os.environ.get('static', None)
-if not STATIC_ROOT:
-    STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', '/static'))
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -142,9 +136,10 @@ STATICFILES_FINDERS = [
 BOWER_COMPONENTS_ROOT = path.join(BASE_DIR, 'components')
 
 BOWER_INSTALLED_APPS = (
-    'jquery',
-    'bootstrap',
-    'BlackrockDigital/startbootstrap-sb-admin-2'
+    #'jquery',
+    #'bootstrap',
+    #'BlackrockDigital/startbootstrap-sb-admin-2'
+    'gentelella',
 )
 
 LOGS_FILE = os.environ.get('logs_directory', None)

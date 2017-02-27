@@ -3,116 +3,172 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+    <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
 
-    {% block title %}
-    <title>SNCF Time Arrival Prediction</title>
-    {% endblock %}
+        {% block title %}
+        <title>SNCF Time Arrival Prediction</title>
+        {% endblock %}
 
-    {% block header_up %}
-    {% endblock %}
-
-    <!-- Bootstrap Core CSS -->
-    <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <!-- MetisMenu CSS -->
-    <link href="{% static 'metisMenu/dist/metisMenu.min.css' %}" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="{% static 'startbootstrap-sb-admin-2/dist/css/sb-admin-2.css' %}" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    {% block header_tail %}
-
-        <!-- Morris Charts CSS -->
-        <link href="{% static 'morrisjs/morris.css' %}" rel="stylesheet">
-
-    {% endblock %}
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-
-        <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{% url 'home' %}"> </a>
-            </div>
-            <!-- /.navbar-header -->
+        {% block header_up %}
+        {% endblock %}
 
 
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        <li>
-                            <a href="{% url 'home' %}"><i class="fa fa-dashboard fa-fw"></i> Home</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'monitoring_home' %}"><i class="fa fa-bar-chart-o fa-fw"></i> Monitoring </a>
-                        </li>
-                        <!--
-                        <li>
-                            <a href="{% url 'sncf_fr_map' %}"><i class="fa fa-map fa-fw"></i> Maps</a>
-                        </li>
-                        -->
-                        <li>
-                            <a href="{% url 'documentation' %}"><i class="fa fa-book fa-fw"></i> Documentation</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'api' %}"><i class="fa fa-gears fa-fw"></i> Api</a>
-                        </li>
+        <!-- Bootstrap Core CSS -->
+        <link href="{% static 'gentelella/vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
 
-                    </ul>
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
-            <!-- /.navbar-static-side -->
-        </nav>
+        <!-- Fonts -->
+        <link href="{% static 'gentelella/vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+
+        <!-- NProgress -->
+        <link href="{% static 'gentelella/vendors/nprogress/nprogress.css' %}" rel="stylesheet">
+
+        <!-- iCheck -->
+        <link href="{% static 'gentelella/vendors/iCheck/skins/flat/green.css' %}" rel="stylesheet">
+
+        <!-- bootstrap-progressbar -->
+        <link href="{% static 'gentelella/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css' %}" rel="stylesheet">
+
+        <!-- JQVMap -->
+        <link href="{% static 'gentelella/vendors/jqvmap/dist/jqvmap.min.css' %}" rel="stylesheet"/>
+
+        <!-- bootstrap-daterangepicker -->
+        <link href="{% static 'gentelella/vendors/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
+
+        <!-- Custom Theme Style -->
+        <link href="{% static 'gentelella/build/css/custom.min.css' %}" rel="stylesheet">
 
 
-        {% block content %}
+        {% block header_tail %}
+
+            <!-- Morris Charts CSS -->
+            <link href="{% static 'gentelella/vendors/morris.js/morris.css' %}" rel="stylesheet">
 
         {% endblock %}
-        <!-- /#page-wrapper : content block-->
 
-    </div>
-    <!-- /#wrapper -->
+    </head>
 
-    <!-- jQuery -->
-    <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
+    <body class="nav-md">
+        <!-- body container -->
+        <div class="container body">
+            <!-- main container -->
+            <div class="main_container">
+                <!-- left container -->
+                <div class="col-md-3 left_col">
+                    <!-- left_col scroll-view -->
+                    <div class="left_col scroll-view">
+                        <div class="navbar nav_title" style="border: 0;">
+                            <a href="{% url 'home' %}" class="site_title"><i class="fa fa-train"></i> <span>SNCF project</span></a>
+                        </div>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
+                        <div class="clearfix"></div>
 
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="{% static 'metisMenu/dist/metisMenu.min.js' %}"></script>
+                        <br />
 
-    <!-- sb-admin-2 Theme JavaScript -->
-    <script src="{% static 'startbootstrap-sb-admin-2/dist/js/sb-admin-2.js' %}"></script>
+                        <!-- sidebar menu -->
+                        <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                            <div class="menu_section">
+                                <h3>General</h3>
+                                <ul class="nav side-menu">
+                                    <li><a href="{% url 'home' %}"><i class="fa fa-home"></i> Home </a>
+                                    </li>
+                                    <li><a href="{% url 'monitoring_home' %}"><i class="fa fa-bar-chart-o"></i> Monitoring </a>
+                                    </li>
 
-    {% block body_tail %}
-    {% endblock %}
-</body>
+                                    <li>
+                                        <a href="{% url 'documentation' %}"><i class="fa fa-book fa-fw"></i> Documentation</a>
+                                    </li>
+                                    <!--
+                                    <li>
+                                    <a href="{% url 'sncf_fr_map' %}"><i class="fa fa-map fa-fw"></i> Maps</a>
+                                    </li>
+                                    -->
+                                    <li>
+                                        <a href="{% url 'api' %}"><i class="fa fa-gears fa-fw"></i> Api</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /sidebar menu -->
+                    </div>
+                    <!-- left_col scroll-view -->
+                </div>
+                <!-- left container -->
+
+                <!-- top navigation -->
+                <div class="top_nav">
+                    <div class="nav_menu">
+                        <nav>
+                            <div class="nav toggle">
+                                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+                <!-- /top navigation -->
+
+                <!-- page content -->
+                <div class="right_col" role="main">
+                    {% block content %}
+
+                    {% endblock %}
+                    <br />
+                </div>
+                <!-- /page content -->
+            </div>
+        </div>
+
+
+        <!-- jQuery -->
+        <script src="{% static 'gentelella/vendors/jquery/dist/jquery.min.js' %}"></script>
+
+        <!-- Bootstrap Core JavaScript -->
+        <script src="{% static 'gentelella/vendors/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+
+        <!-- Custom Theme Scripts -->
+        <script src="{% static 'gentelella/build/js/custom.min.js' %}"></script>
+
+
+        {% block body_tail %}
+        <!-- FastClick -->
+        <script src="{% static 'gentelella/vendors/fastclick/lib/fastclick.js' %}"></script>
+        <!-- NProgress -->
+        <script src="{% static 'gentelella/vendors/nprogress/nprogress.js' %}"></script>
+        <!-- Chart.js -->
+        <script src="{% static 'gentelella/vendors/Chart.js/dist/Chart.min.js' %}"></script>
+        <!-- gauge.js -->
+        <script src="{% static 'gentelella/vendors/gauge.js/dist/gauge.min.js' %}"></script>
+        <!-- bootstrap-progressbar -->
+        <script src="{% static 'gentelella/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js' %}"></script>
+        <!-- iCheck -->
+        <script src="{% static 'gentelella/vendors/iCheck/icheck.min.js' %}"></script>
+        <!-- Skycons -->
+        <script src="{% static 'gentelella/vendors/skycons/skycons.js' %}"></script>
+        <!-- Flot -->
+        <script src="{% static 'gentelella/vendors/Flot/jquery.flot.js' %}"></script>
+        <script src="{% static 'gentelella/vendors/Flot/jquery.flot.pie.js' %}"></script>
+        <script src="{% static 'gentelella/vendors/Flot/jquery.flot.time.js' %}"></script>
+        <script src="{% static 'gentelella/vendors/Flot/jquery.flot.stack.js' %}"></script>
+        <script src="{% static 'gentelella/vendors/Flot/jquery.flot.resize.js' %}"></script>
+        <!-- Flot plugins -->
+        <script src="{% static 'gentelella/vendors/flot.orderbars/js/jquery.flot.orderBars.js' %}"></script>
+        <script src="{% static 'gentelella/vendors/flot-spline/js/jquery.flot.spline.min.js' %}"></script>
+        <script src="{% static 'gentelella/vendors/flot.curvedlines/curvedLines.js' %}"></script>
+        <!-- DateJS -->
+        <script src="{% static 'gentelella/vendors/DateJS/build/date.js' %}"></script>
+        <!-- JQVMap -->
+        <script src="{% static 'gentelella/vendors/jqvmap/dist/jquery.vmap.js' %}"></script>
+        <script src="{% static 'gentelella/vendors/jqvmap/dist/maps/jquery.vmap.world.js' %}"></script>
+        <script src="{% static 'gentelella/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js' %}"></script>
+        <!-- bootstrap-daterangepicker -->
+        <script src="{% static 'gentelella/vendors/moment/min/moment.min.js' %}"></script>
+        <script src="{% static 'gentelella/vendors/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+        {% endblock %}
+    </body>
 
 </html>
