@@ -1,0 +1,7 @@
+api_transilien_manager.utils_api_client module
+==============================================
+
+.. automodule:: api_transilien_manager.utils_api_client
+    :members:
+    :undoc-members:
+    :show-inheritance:

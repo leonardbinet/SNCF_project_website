@@ -1,0 +1,7 @@
+api_transilien_manager.mod_02_query_schedule module
+===================================================
+
+.. automodule:: api_transilien_manager.mod_02_query_schedule
+    :members:
+    :undoc-members:
+    :show-inheritance:

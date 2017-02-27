@@ -1,0 +1,7 @@
+api_transilien_manager.mod_01_extract_api module
+================================================
+
+.. automodule:: api_transilien_manager.mod_01_extract_api
+    :members:
+    :undoc-members:
+    :show-inheritance:

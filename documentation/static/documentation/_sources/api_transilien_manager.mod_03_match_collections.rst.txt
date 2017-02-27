@@ -1,0 +1,7 @@
+api_transilien_manager.mod_03_match_collections module
+======================================================
+
+.. automodule:: api_transilien_manager.mod_03_match_collections
+    :members:
+    :undoc-members:
+    :show-inheritance:

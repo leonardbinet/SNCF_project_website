@@ -1,0 +1,7 @@
+api_transilien_manager.utils_dynamo module
+==========================================
+
+.. automodule:: api_transilien_manager.utils_dynamo
+    :members:
+    :undoc-members:
+    :show-inheritance:

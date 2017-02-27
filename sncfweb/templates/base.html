@@ -80,9 +80,14 @@
                                     <li><a href="{% url 'monitoring_home' %}"><i class="fa fa-bar-chart-o"></i> Monitoring </a>
                                     </li>
 
-                                    <li>
-                                        <a href="{% url 'documentation' %}"><i class="fa fa-book fa-fw"></i> Documentation</a>
+                                    <li class="active"><a><i class="fa fa-book fa-fw"></i> Documentation <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu" style="display: block;">
+                                          <li><a href="{% url 'documentation' %}">Project documentation</a></li>
+                                          <li><a target="_blank" href="{% static 'documentation/index.html' %}">ETL documentation</a></li>
+
+                                        </ul>
                                     </li>
+
                                     <!--
                                     <li>
                                     <a href="{% url 'sncf_fr_map' %}"><i class="fa fa-map fa-fw"></i> Maps</a>

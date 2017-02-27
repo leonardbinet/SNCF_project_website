@@ -1,0 +1,7 @@
+api_transilien_manager.settings module
+======================================
+
+.. automodule:: api_transilien_manager.settings
+    :members:
+    :undoc-members:
+    :show-inheritance:
