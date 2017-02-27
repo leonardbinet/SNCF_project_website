@@ -7,6 +7,8 @@ This website was developed for a project with SNCF's R&D department:
 - to display the project's documentation
 - to make databases (Mongo and Dynamo) status available
 
+It is available [HERE](http://www.sncf-departure-time-prediction.info).
+
 This repository is only one of the project's repositories. You can find:
 - a repository with Vagrant and Salt files used to automate deployment, [here](https://github.com/leonardbinet/Salt-Vagrant-master-mode).
 - a repository with the application used to extract/transform/load data from transilien's API into Mongo and Dynamos databases, [here](https://github.com/leonardbinet/Transilien-Api-ETL).
