@@ -7,7 +7,7 @@ This website was developed for a project with SNCF's R&D department:
 - to display the project's documentation
 - to make databases (Mongo and Dynamo) status available
 
-It is available [HERE](http://www.sncf-departure-time-prediction.info).
+It is available [HERE](http://www.departure-time-prediction-project.com/).
 
 This repository is only one of the project's repositories. You can find:
 - a repository with Vagrant and Salt files used to automate deployment, [here](https://github.com/leonardbinet/Salt-Vagrant-master-mode).
