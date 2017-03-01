@@ -17,8 +17,6 @@ This repository is only one of the project's repositories. You can find:
 
 
 
-
-
 ## How it looks
 ![monitoring](documentation/images/monitoring.png)
 
