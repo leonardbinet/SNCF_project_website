@@ -1,7 +1,0 @@
-api_transilien_manager.task_01_d_sch_dep module
-===============================================
-
-.. automodule:: api_transilien_manager.task_01_d_sch_dep
-    :members:
-    :undoc-members:
-    :show-inheritance:

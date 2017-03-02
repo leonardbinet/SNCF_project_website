@@ -1,7 +1,0 @@
-api_transilien_manager.utils_rdb module
-=======================================
-
-.. automodule:: api_transilien_manager.utils_rdb
-    :members:
-    :undoc-members:
-    :show-inheritance:

@@ -1,7 +1,0 @@
-api_transilien_manager.utils_misc module
-========================================
-
-.. automodule:: api_transilien_manager.utils_misc
-    :members:
-    :undoc-members:
-    :show-inheritance:

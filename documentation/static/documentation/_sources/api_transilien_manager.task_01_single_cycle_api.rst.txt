@@ -1,7 +1,0 @@
-api_transilien_manager.task_01_single_cycle_api module
-======================================================
-
-.. automodule:: api_transilien_manager.task_01_single_cycle_api
-    :members:
-    :undoc-members:
-    :show-inheritance:

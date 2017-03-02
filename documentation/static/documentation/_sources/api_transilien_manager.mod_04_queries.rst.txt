@@ -1,7 +1,0 @@
-api_transilien_manager.mod_04_queries module
-============================================
-
-.. automodule:: api_transilien_manager.mod_04_queries
-    :members:
-    :undoc-members:
-    :show-inheritance:

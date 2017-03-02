@@ -1,7 +1,0 @@
-api_transilien_manager.utils_mongo module
-=========================================
-
-.. automodule:: api_transilien_manager.utils_mongo
-    :members:
-    :undoc-members:
-    :show-inheritance:

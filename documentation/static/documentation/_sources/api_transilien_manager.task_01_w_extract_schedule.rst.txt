@@ -1,7 +1,0 @@
-api_transilien_manager.task_01_w_extract_schedule module
-========================================================
-
-.. automodule:: api_transilien_manager.task_01_w_extract_schedule
-    :members:
-    :undoc-members:
-    :show-inheritance:
