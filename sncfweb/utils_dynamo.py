@@ -59,9 +59,15 @@ def dynamo_get_trains_in_station(station, day=None, max_req=100):
     data = response['Items']
 
     while response.get('LastEvaluatedKey') and max_req > 0:
-        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+        response = table.query(
+            ConsistentRead=False,
+            KeyConditionExpression=Key('station_id').eq(
+                str(station)) & Key('day_train_num').begins_with(day),
+            ExclusiveStartKey=response['LastEvaluatedKey']
+        )
         data.extend(response['Items'])
         max_req -= 1
+
     return data
 
 

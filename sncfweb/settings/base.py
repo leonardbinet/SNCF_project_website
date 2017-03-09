@@ -199,3 +199,9 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
 sys.excepthook = handle_exception
+
+
+# Dynamo settings
+dynamo_real_dep = "real_departures_2"
+dynamo_sched_dep = "scheduled_departures"
+dynamo_sched_dep_all = "scheduled_departures_all"

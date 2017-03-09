@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from sncfweb.utils_dynamo import dynamo_get_trains_in_station
+from project_api.utils import dynamo_get_trip_stops
 from rest_framework import generics
 from project_api.serializers import TrainPassage
 from datetime import datetime
@@ -37,4 +38,21 @@ class GetStationDisplayedTrains(APIView):
             return Response({"Error": "must specify station_id"})
 
         response = dynamo_get_trains_in_station(station_id, day=day)
+        return Response(response)
+
+
+class GetTripSchedule(APIView):
+    """
+    Query a given trip_id to get all stop times and stations
+    """
+
+    def get(self, request, format=None):
+        """
+        """
+        trip_id = request.query_params.get('trip_id', None)
+
+        if not trip_id:
+            return Response({"Error": "must specify trip_id"})
+
+        response = dynamo_get_trip_stops(trip_id)
         return Response(response)
