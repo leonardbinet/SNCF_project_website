@@ -21,14 +21,20 @@
                 <!-- /.panel-heading -->
                 <div class="panel-body">
 
-                    You can currently:
+                    You can currently access two endpoints: Station or Trip.
+                    </br>
+
+                    For each of these endpoints, you can specify 'info' parameter: "real-time" (default), "schedule" or "prediction".
+
                     <ul>
+                    </br>
+
                         <li>
-                            query on given station, on given day (today if not specified) at what time trains really departed, with which delay, and at what time are next trains expected to arrive based on what is displayed on information boards: <a href="{% url 'api_station' %}?station_id=8727622&day=20170216"> click here to access to see an example</a>
+                            STATION: query on given station, on given day (today if not specified) <a href="{% url 'api_station' %}?station_id=8727622&day=20170216"> EXAMPLE: "{% url 'api_station' %}?station_id=8727622&day=20170216"</a>
                             </br>
 
-                            To access it: <a href="{% url 'api_station' %}"> api/station/ </a>
-
+                            To access it: <a href="{% url 'api_station' %}"> {% url 'api_station' %} </a>
+                            </br>
                             With parameters:
                             <ul>
                                 <li>
@@ -37,11 +43,28 @@
                                 <li>
                                     Optional: day: in a yyyymmdd format, for instance, day=20170217. If not specified, today.
                                 </li>
+                                <li>
+                                    Optional: info:  default "real-time", this parameter can be "real-time", "schedule" or "prediction".
+                                </li>
                             </ul>
                         </li>
+                        </br>
                         <li>
-                            query a given trip_id to get its schedule: <a href="{% url 'trip_schedule' %}?trip_id=DUASN156466F01002-1_402666"> click here to access to see an example</a>
+                            TRIP: query a given trip_id to get its schedule: <a href="{% url 'api_trip' %}?trip_id=DUASN156466F01002-1_402666"> EXAMPLE: {% url 'api_trip' %}?trip_id=DUASN156466F01002-1_402666"</a>
+
                             </br>
+                            To access it: <a href="{% url 'api_trip' %}"> {% url 'api_trip' %} </a>
+
+                            </br>
+                            With parameters:
+                            <ul>
+                                <li>
+                                    Required: trip_id: for instance, trip_id=DUASN156466F01002-1_402666
+                                </li>
+                                <li>
+                                    Optional: info:  default "real-time", this parameter can be "real-time", "schedule", "prediction".
+                                </li>
+                            </ul>
                         </li>
                     </ul>
 
