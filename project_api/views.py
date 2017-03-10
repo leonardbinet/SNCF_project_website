@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from project_api.utils import sch_trip_stops, rt_trains_in_station, rt_train_in_stations, rt_trip_stops, sch_station_stops
+from project_api.utils import sch_trip_stops, rt_trains_in_station, rt_train_in_stations, rt_trip_stops, sch_station_stops, trip_dummy_predict
 from rest_framework import generics
 from project_api.serializers import TrainPassage
 from datetime import datetime
@@ -89,50 +89,9 @@ class Trip(APIView):
             response = rt_trip_stops(trip_id)
             return Response(response)
 
+        if info == "prediction":
+            response = trip_dummy_predict(trip_id)
+            return Response(response)
+
         else:
             return Response({"Error": "not implemented yet, for now, only real-time"})
-
-
-class GetTripPredictions(APIView):
-    """
-    Query a given trip_id to get all stop times and stations, and predictions of arrival times in all remaining stations based on real-time information.
-    """
-
-    def get(self, request, format=None):
-        """
-        Steps:
-         - 1: get scheduled stop times to know all scheduled stations for this trip, and list stations
-         - 2: try to find train_num (extract digits), and get date
-         - 3: get real-time information for this trip in all scheduled stations
-         - 4: find out which are the remaining stations (those to be predicted)
-         - 5: build X matrix (features)
-         - 5: compute predictions
-         - 6: return predictions in asked format
-
-        """
-        trip_id = request.query_params.get('trip_id', None)
-
-        if not trip_id:
-            return Response({"Error": "must specify trip_id"})
-
-        # Step 1: find schedule and extract stations
-        scheduled_stops = sch_trip_stops(trip_id)
-        station_ids = list(map(lambda x: x["station_id"], scheduled_stops))
-
-        # Step 2: try to find train_num
-        train_num = trip_id[5:11]  # should be improved later
-
-        # Step 3: query real-time data
-        rt_elements = rt_train_in_stations(
-            stations=station_ids, train_num=train_num)
-
-        # Step 4: find out which stations are passed yet
-        # "expected_passage_time": "19:47:00"
-        paris_time = get_paris_local_datetime_now().strftime('%H:%M:%S')
-
-        for rt_element in rt_elements:
-            rt_element["passed"] = rt_element[
-                "expected_passage_time"] < paris_time
-
-        # Step 5: build X matrix
-        return Response(rt_elements)
