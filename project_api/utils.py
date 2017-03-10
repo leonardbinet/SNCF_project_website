@@ -1,7 +1,8 @@
 from sncfweb.settings.base import dynamo_sched_dep_all, dynamo_real_dep
 from sncfweb.utils_dynamo import dynamo_get_table, Key, get_paris_local_datetime_now
+import logging
 
-# Request all passages in given station (real and expected, not planned)
+logger = logging.getLogger(__name__)
 
 
 def rt_trains_in_station(station, day=None, max_req=100):
@@ -90,3 +91,33 @@ def sch_trip_stops(trip_id, max_req=100):
         data.extend(response['Items'])
         max_req -= 1
     return data
+
+
+def rt_trip_stops(trip_id):
+    """
+    """
+    # Step 1: find schedule and extract stations
+    scheduled_stops = sch_trip_stops(trip_id)
+    station_ids = list(map(lambda x: x["station_id"], scheduled_stops))
+
+    # Step 2: try to find train_num
+    train_num = trip_id[5:11]  # should be improved later
+    logger.info("Search for %s, %s", trip_id, train_num)
+
+    # Step 3: query real-time data
+    rt_elements = rt_train_in_stations(
+        stations=station_ids, train_num=train_num)
+
+    # Step 4: find out which stations are passed yet
+    # "expected_passage_time": "19:47:00"
+    paris_time = get_paris_local_datetime_now().strftime('%H:%M:%S')
+
+    for rt_element in rt_elements:
+        rt_element["passed"] = rt_element[
+            "expected_passage_time"] < paris_time
+
+    return rt_elements
+
+
+def dummy_predict():
+    pass

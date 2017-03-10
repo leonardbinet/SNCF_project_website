@@ -30,7 +30,9 @@
                     </br>
 
                         <li>
-                            STATION: query on given station, on given day (today if not specified) <a href="{% url 'api_station' %}?station_id=8727622&day=20170216"> EXAMPLE: "{% url 'api_station' %}?station_id=8727622&day=20170216"</a>
+                            STATION: query a station, on given day (today if not specified) to get information on trips.
+                            </br>
+                            <a href="{% url 'api_station' %}?station_id=8727622&day=20170216&info=real-time"> EXAMPLE: "{% url 'api_station' %}?station_id=8727622&day=20170216&info=real-time"</a>
                             </br>
 
                             To access it: <a href="{% url 'api_station' %}"> {% url 'api_station' %} </a>
@@ -50,7 +52,9 @@
                         </li>
                         </br>
                         <li>
-                            TRIP: query a given trip_id to get its schedule: <a href="{% url 'api_trip' %}?trip_id=DUASN156466F01002-1_402666"> EXAMPLE: {% url 'api_trip' %}?trip_id=DUASN156466F01002-1_402666"</a>
+                            TRIP: query a trip_id to get information about its stops:
+                            </br>
+                            <a href="{% url 'api_trip' %}?trip_id=DUASN156466F01002-1_402666&info=schedule"> EXAMPLE: {% url 'api_trip' %}?trip_id=DUASN156466F01002-1_402666&info=schedule"</a>
 
                             </br>
                             To access it: <a href="{% url 'api_trip' %}"> {% url 'api_trip' %} </a>

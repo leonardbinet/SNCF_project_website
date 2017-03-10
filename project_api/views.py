@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from project_api.utils import sch_trip_stops, rt_trains_in_station, rt_train_in_stations, get_paris_local_datetime_now
+from project_api.utils import sch_trip_stops, rt_trains_in_station, rt_train_in_stations, rt_trip_stops
 from rest_framework import generics
 from project_api.serializers import TrainPassage
 from datetime import datetime
@@ -82,25 +82,8 @@ class Trip(APIView):
             return Response(response)
 
         if info == "real-time":
-            # Step 1: find schedule and extract stations
-            scheduled_stops = sch_trip_stops(trip_id)
-            station_ids = list(map(lambda x: x["station_id"], scheduled_stops))
-
-            # Step 2: try to find train_num
-            train_num = trip_id[5:11]  # should be improved later
-
-            # Step 3: query real-time data
-            rt_elements = rt_train_in_stations(
-                stations=station_ids, train_num=train_num)
-
-            # Step 4: find out which stations are passed yet
-            # "expected_passage_time": "19:47:00"
-            paris_time = get_paris_local_datetime_now().strftime('%H:%M:%S')
-
-            for rt_element in rt_elements:
-                rt_element["passed"] = rt_element[
-                    "expected_passage_time"] < paris_time
-            return Response(rt_elements)
+            response = rt_trip_stops(trip_id)
+            return Response(response)
 
         else:
             return Response({"Error": "not implemented yet, for now, only real-time"})
