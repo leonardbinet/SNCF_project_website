@@ -205,3 +205,4 @@ sys.excepthook = handle_exception
 dynamo_real_dep = "real_departures_2"
 dynamo_sched_dep = "scheduled_departures"
 dynamo_sched_dep_all = "scheduled_departures_all"
+sched_dep_all_sec_index = "station_id-trip_id-index"

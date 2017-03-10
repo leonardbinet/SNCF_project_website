@@ -1,5 +1,9 @@
-from sncfweb.settings.base import dynamo_sched_dep_all, dynamo_real_dep
-from sncfweb.utils_dynamo import dynamo_get_table, Key, get_paris_local_datetime_now
+from sncfweb.settings.base import dynamo_sched_dep_all, dynamo_real_dep, sched_dep_all_sec_index, dynamo_sched_dep
+from sncfweb.utils_dynamo import dynamo_get_table, Key, get_paris_local_datetime_now, dynamo_submit_batch_getitem_request
+from boto3.dynamodb.types import TypeSerializer, TypeDeserializer
+
+import json
+import pandas as pd
 import logging
 
 logger = logging.getLogger(__name__)
@@ -90,6 +94,38 @@ def sch_trip_stops(trip_id, max_req=100):
         )
         data.extend(response['Items'])
         max_req -= 1
+    return data
+
+
+def sch_station_stops(station_id, day=None, max_req=100):
+    # IndexName='video_id-index',
+    """
+    Query items in scheduled_departures table, for a given station_id on a given day
+
+    """
+    if not day:
+        paris_date = get_paris_local_datetime_now()
+        day = paris_date.strftime("%Y%m%d")
+
+    # First step: find all trip_id/station_id tuples
+    table = dynamo_get_table(dynamo_sched_dep)
+    response = table.query(
+        ConsistentRead=False,
+        KeyConditionExpression=Key('station_id').eq(
+            str(station_id)) & Key('day_train_num').begins_with(day)
+    )
+    data = response['Items']
+
+    while response.get('LastEvaluatedKey') and max_req > 0:
+        response = table.query(
+            ConsistentRead=False,
+            KeyConditionExpression=Key('station_id').eq(
+                str(station_id)) & Key('day_train_num').begins_with(day),
+            ExclusiveStartKey=response['LastEvaluatedKey']
+        )
+        data.extend(response['Items'])
+        max_req -= 1
+
     return data
 
 

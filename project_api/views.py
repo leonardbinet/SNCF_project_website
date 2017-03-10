@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from project_api.utils import sch_trip_stops, rt_trains_in_station, rt_train_in_stations, rt_trip_stops
+from project_api.utils import sch_trip_stops, rt_trains_in_station, rt_train_in_stations, rt_trip_stops, sch_station_stops
 from rest_framework import generics
 from project_api.serializers import TrainPassage
 from datetime import datetime
@@ -45,6 +45,10 @@ class Station(APIView):
 
         if info == "real-time":
             response = rt_trains_in_station(station_id, day=day)
+            return Response(response)
+
+        if info == "schedule":
+            response = sch_station_stops(station_id, day=day)
             return Response(response)
 
         else:

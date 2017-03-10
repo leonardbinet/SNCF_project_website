@@ -60,3 +60,41 @@ def check_dynamo_connection():
         # Status stays False
         add_info = e
     return status, add_info
+
+
+def dynamo_submit_batch_getitem_request(items_keys, table_name, max_retry=3, prev_resp=None):
+    # Compute query in batches of 100 items
+    batches = [items_keys[i:i + 100]
+               for i in range(0, len(items_keys), 100)]
+
+    client = dynamo_get_client()
+
+    responses = []
+    unprocessed_keys = []
+    for batch in batches:
+        response = client.batch_get_item(
+            RequestItems={
+                table_name: {
+                    'Keys': batch
+                }
+            }
+        )
+        try:
+            responses += response["Responses"][table_name]
+        except KeyError:
+            pass
+        try:
+            unprocessed_keys += response[
+                "UnprocessedKeys"][table_name]
+        except KeyError:
+            pass
+
+    # TODO: add timer
+    if len(unprocessed_keys) > 0:
+        if max_retry == 0:
+            return responses
+        else:
+            max_retry = max_retry - 1
+            return dynamo_submit_batch_getitem_request(unprocessed_keys, table_name, max_retry=max_retry, prev_resp=responses)
+
+    return responses
