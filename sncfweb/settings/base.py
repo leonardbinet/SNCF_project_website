@@ -48,6 +48,8 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'maps/templates'),
             os.path.join(BASE_DIR, 'project_api/templates'),
             os.path.join(BASE_DIR, 'documentation/templates'),
+            os.path.join(BASE_DIR, 'board/templates'),
+
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -125,6 +127,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "sncfweb/static"),
     os.path.join(BASE_DIR, "monitoring/static"),
     os.path.join(BASE_DIR, "documentation/static"),
+    os.path.join(BASE_DIR, "board/static"),
 ]
 
 

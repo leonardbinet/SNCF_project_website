@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^maps/', include('maps.urls')),
     url(r'^monitoring/', include('monitoring.urls')),
     url(r'^api/', include('project_api.urls')),
+    url(r'^board/', include('board.urls')),
 ]
