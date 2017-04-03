@@ -1,7 +1,10 @@
 """Api views.
 """
+import json
 
 from django.shortcuts import render
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+# from rest_framework.pagination import PaginationSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
@@ -33,6 +36,7 @@ class Station(APIView):
         day = request.query_params.get('day', None)
         info = request.query_params.get('info', "real-time")
         form = request.query_params.get('form', None)
+        page = request.GET.get('page', None)
 
         if day:
             try:
@@ -61,7 +65,22 @@ class Station(APIView):
                 response = result.get_flat_dicts(
                     realtime_only=False, normalize=True
                 )
-            return Response(response)
+            paginator = Paginator(response, 10)
+
+            # response = response[:50]
+            try:
+                # serializer = PaginationSerializer(instance=page)
+                pag_response = paginator.page(page)
+            except PageNotAnInteger:
+                # If page is not an integer, deliver first page.
+                pag_response = paginator.page(1)
+            except EmptyPage:
+                # If page is out of range (e.g. 9999), deliver last page of
+                # results.
+                pag_response = paginator.page(paginator.num_pages)
+            # json.dumps(pag_response.object_list)
+            pag_response = pag_response.object_list
+            return Response(pag_response)
 
         elif info == "prediction":
             return Response({"Not implemented yet": "soon"})
