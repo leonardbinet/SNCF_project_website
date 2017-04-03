@@ -10,3 +10,8 @@ djangorestframework
 boto3
 gunicorn
 pytz
+pynamodb
+sqlalchemy
+mongoengine
+pymongo
+motor

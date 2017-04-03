@@ -54,6 +54,8 @@
                                 <th>trip_id</th>
                                 <th>stop_sequence</th>
                                 <th>trip_headsign</th>
+                                <th>day_train_num</th>
+                                <th>expected_passage_time</th>
                             </tr>
                         </thead>
                         <tfoot>
@@ -63,10 +65,11 @@
                                 <th>trip_id</th>
                                 <th>stop_sequence</th>
                                 <th>trip_headsign</th>
+                                <th>day_train_num</th>
+                                <th>expected_passage_time</th>
                             </tr>
                         </tfoot>
                     </table>
-
                 </div>
 
                 <!-- /.panel-body -->
@@ -103,6 +106,9 @@
 <script src="{% static 'gentelella/vendors/datatables.net-scroller/js/dataTables.scroller.min.js' %}"></script>
 
 -->
+<script>
+var ajaxUrl = "/api/station/?station_id=8727622&info=real-time"
+</script>
 <script src="{% static 'board/js/interface.js' %}"></script>
 
 

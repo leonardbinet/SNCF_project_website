@@ -1,8 +1,9 @@
+"""Module for specific mongo monitoring functions
+"""
+
 import os
-from datetime import datetime, timedelta
 from pymongo import MongoClient
 import pymongo
-from navitia_client import Client
 from sncfweb.settings.secrets import get_secret
 
 try:
@@ -18,7 +19,10 @@ MONGO_HOST = get_secret("MONGO_HOST")
 MONGO_PASSWORD = get_secret("MONGO_PASSWORD")
 
 
-def connect_mongoclient(host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD, port=None, database=None, max_delay=15000):
+def connect_mongoclient(
+    host=MONGO_HOST, user=MONGO_USER, password=MONGO_PASSWORD,
+    port=None, database=None, max_delay=15000
+):
     # Build URI
     uri = "mongodb://"
     if user and password:

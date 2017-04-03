@@ -1,7 +1,7 @@
 
 from . import parser
 import os
-from sncfweb.utils_mongo import connect_mongoclient
+from api_etl.utils_mongo import get_mongoclient
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from navitia_client import Client
@@ -14,7 +14,7 @@ SNCF_API_USER = get_secret("SNCF_API_USER")
 
 
 def get_collection(collection):
-    c = connect_mongoclient()
+    c = get_mongoclient()
     db = c[MONGO_DB_NAME]
     collection = db[collection]
     return collection

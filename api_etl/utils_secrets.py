@@ -1,10 +1,12 @@
+""" This module contains a function to extract secrets from environment or a
+secret file.
+"""
+
 import os
 from os import path
 import json
 import logging
-
-BASE_DIR = os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))))
+from api_etl.settings import BASE_DIR
 
 logger = logging.getLogger(__name__)
 

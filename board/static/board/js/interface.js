@@ -1,8 +1,9 @@
 
 $(document).ready(function() {
     var table = $('#example').DataTable( {
+        "pageLength": 20,
         "ajax": {
-            "url":"/api/trip/?trip_id=DUASN156466F01002-1_402666&info=schedule",
+            "url":ajaxUrl,
             "dataSrc": "",
         },
         "columns": [
@@ -11,6 +12,8 @@ $(document).ready(function() {
             { 'data': "trip_id" },
             { 'data': "stop_sequence" },
             { 'data': "trip_headsign" },
+            { 'data': "day_train_num" },
+            { 'data': "expected_passage_time" },
             ]
         } );
     }

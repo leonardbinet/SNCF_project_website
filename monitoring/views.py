@@ -1,7 +1,9 @@
-import os
+"""Monitoring views.
+"""
+
 from django.shortcuts import render
-from sncfweb.utils_mongo import check_mongo_connection
-from sncfweb.utils_dynamo import check_dynamo_connection
+from monitoring.utils_mongo import check_mongo_connection
+from monitoring.utils_dynamo import check_dynamo_connection
 from django.http import JsonResponse
 
 
