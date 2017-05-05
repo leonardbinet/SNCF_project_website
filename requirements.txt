@@ -3,7 +3,7 @@ Django==1.10.3
 django-bower==5.2.0
 six==1.10.0
 navitia_client
-pandas
+pandas==0.19
 numpy
 djangorestframework
 boto3
@@ -14,3 +14,4 @@ sqlalchemy
 mongoengine
 pymongo
 motor
+psycopg2
