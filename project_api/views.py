@@ -57,15 +57,16 @@ class Station(APIView):
             # Get realtime
             result.batch_realtime_query(yyyymmdd=day)
 
-            if form == "nested":
-                response = result.get_nested_dicts(
-                    realtime_only=False, normalize=True
-                )
-            else:
+            # Default form is nested
+            if form == "flat":
                 response = result.get_flat_dicts(
                     realtime_only=False, normalize=True
                 )
-            paginator = Paginator(response, 10)
+            else:
+                response = result.get_nested_dicts(
+                    realtime_only=False, normalize=True
+                )
+            paginator = Paginator(response, 20)
 
             # response = response[:50]
             try:
