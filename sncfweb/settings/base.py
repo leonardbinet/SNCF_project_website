@@ -182,6 +182,18 @@ LOGGING = {
 }
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'cache_table',
+    }
+}
+
 # Endroit ou ce sera stocké sur le serveur
 # Soit cela est spécifié dans les variables d'environnment, soit on le
 # stocke dans un répertoire un niveau au dessus puis dans static

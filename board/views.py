@@ -2,9 +2,14 @@ from django.shortcuts import render
 import pandas as pd
 
 
+def index(request):
+    context = {}
+    return render(request, 'board/index.html', context)
+
+
 def trip(request):
     context = {"type": "trip"}
-    return render(request, 'board/trip.html', context)
+    return render(request, 'board/index.html', context)
 
 
 def station(request):

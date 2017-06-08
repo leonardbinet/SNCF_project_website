@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+<!-- Balise title <60 caractères -->
+{% block title %}
+<title>Home</title>
+{% endblock %}
+
+{% block header_up %}
+
+<!-- Datatables-->
+
+<link href="{% static 'gentelella/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'gentelella/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'gentelella/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'gentelella/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'gentelella/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css' %}" rel="stylesheet">
+
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div id="outer-container" class="col-md-12">
+            
+            <h1 class="page-header">Project's API</h1>
+            
+            <!-- LINE SELECTION -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2>LINE CHOICE</h2>
+                </div>
+
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    Choose your line:
+                    <div id="line-choice" class="btn-group" role="group">
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            
+            <!-- TRIP SELECTION -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2>TRIP CHOICE</h2>
+                </div>
+
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div>Chosen line: <b id="chosen-line-text"></b></div>
+                    <br>
+                    Choose your trip:
+                    <!--
+                    <div id="trip-choice" class="btn-group" role="group">
+                        <button type="button" class="btn btn-default">All</button>
+                        <button type="button" class="btn btn-default">Currently rolling</button>
+                        <button type="button" class="btn btn-default">Passing a given station</button>
+                    </div>
+                    <h3>Active trains</h3>
+                    -->
+                    
+                    <table id="active-trains-table" class="display" width="100%"></table>
+
+
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            
+            <!-- TRIP VIZ -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2>TRIP DISPLAY</h2>
+                </div>
+
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+
+                </div>
+                <!-- /.panel-body -->
+            </div>
+
+
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+
+{% endblock %}
+
+{% block body_tail %}
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js">
+</script>
+<script>
+var ajaxUrl = "/api/station/?station_id=8727622&info=real-time"
+</script>
+<script src="{% static 'board/js/interface.js' %}"></script>
+<script src="{% static 'board/js/choices.js' %}"></script>
+
+
+{% endblock %}

@@ -7,15 +7,12 @@ from pynamodb.attributes import UnicodeAttribute
 
 from sqlalchemy.ext import declarative
 from sqlalchemy import Column, String, ForeignKey
-from pynamodb.exceptions import DoesNotExist
 
-from mongoengine import DynamicDocument, StringField, IntField, BooleanField
+from mongoengine import DynamicDocument, StringField
 
 from api_etl.utils_misc import get_paris_local_datetime_now, DateConverter
 from api_etl.utils_secrets import get_secret
 from api_etl.settings import dynamo_realtime, dynamo_schedule
-
-logger = logging.getLogger(__name__)
 
 # Set as environment variable: boto takes it directly
 AWS_DEFAULT_REGION = get_secret("AWS_DEFAULT_REGION", env=True)
@@ -50,6 +47,25 @@ class RealTimeDeparture(DyModel):
     request_day = UnicodeAttribute()
     request_time = UnicodeAttribute()
     data_freshness = UnicodeAttribute()
+
+    def has_passed(self, at_datetime=None, seconds=False):
+        """ Checks if train expected passage time has passed, compared to a
+        given datetime. If none provided, compared to now.
+        """
+        if not at_datetime:
+            at_datetime = get_paris_local_datetime_now().replace(tzinfo=None)
+
+        dt = self.expected_passage_time
+        dd = self.expected_passage_day
+
+        time_past_dep = DateConverter(dt=at_datetime)\
+            .compute_delay_from(special_date=dd, special_time=dt)
+
+        if seconds:
+            # return number of seconds instead of boolean
+            return time_past_dep
+
+        return (time_past_dep >= 0)
 
 
 class ScheduledDeparture(DyModel):
@@ -138,66 +154,36 @@ class StopTime(RdbModel):
     drop_off_type = Column(String(50))
 
     def get_partial_index(self):
-        self.station_id = self.stop_id[-7:]
-        self.train_num = self.trip_id[5:11]
-        return (self.station_id, self.train_num)
+        self._station_id = self.stop_id[-7:]
+        self._train_num = self.trip_id[5:11]
+        return (self._station_id, self._train_num)
 
     def get_realtime_index(self, yyyymmdd):
         self.get_partial_index()
-        self.yyyymmdd = yyyymmdd
-        self.day_train_num = "%s_%s" % (yyyymmdd, self.train_num)
-        return (self.station_id, self.day_train_num)
+        self._yyyymmdd = yyyymmdd
+        self._day_train_num = "%s_%s" % (yyyymmdd, self._train_num)
+        return (self._station_id, self._day_train_num)
 
-    def set_realtime(self, realtime_object=None):
-        assert isinstance(realtime_object, RealTimeDeparture)
-        if realtime_object:
-            self._realtime_object = realtime_object
-            self._realtime_dict = self._realtime_object.attribute_values
-            self.realtime_found = True
-            self._compute_delay()
-            self._has_passed()
-        else:
-            self.realtime_found = False
-
-    def get_realtime_info(self, yyyymmdd, ignore_error=True):
-        self.get_realtime_index(yyyymmdd)
-
-        # Try to get it from dynamo
-        try:
-            realtime_object = RealTimeDeparture.get(
-                hash_key=self.station_id,
-                range_key=self.day_train_num
-            )
-            self.set_realtime(realtime_object=realtime_object)
-
-        except DoesNotExist:
-            self.set_realtime(realtime_object=False)
-            logger.info("Realtime not found for %s, %s" %
-                        (self.station_id, self.day_train_num))
-            if not ignore_error:
-                raise DoesNotExist
-
-    def _compute_delay(self):
-        """ Between scheduled 'stop time' departure time, and realtime expected
-        departure time.
+    def has_passed(self, at_datetime=None, seconds=False):
+        """ Checks if train expected passage time has passed, based on:
+        - expected_passage_time we got from realtime api.
+        - scheduled_departure_time from gtfs
+        And sets it as attributes.
         """
-        sdt = self.departure_time
-        sdd = self.yyyymmdd
-        rtdt = self._realtime_object.expected_passage_time
-        rtdd = self._realtime_object.expected_passage_day
-        self.delay = DateConverter(normal_date=rtdd, normal_time=rtdt)\
-            .compute_delay_from(special_date=sdd, special_time=sdt)
-        return self.delay
+        if not at_datetime:
+            at_datetime = get_paris_local_datetime_now().replace(tzinfo=None)
 
-    def _has_passed(self):
-        """ Checks if train expected passage time has passed
-        """
-        rtdt = self._realtime_object.expected_passage_time
-        rtdd = self._realtime_object.expected_passage_day
-        cdt = get_paris_local_datetime_now().replace(tzinfo=None)
-        timepastdep = DateConverter(dt=cdt)\
-            .compute_delay_from(normal_date=rtdd, normal_time=rtdt)
-        self.passed = (timepastdep >= 0)
+        dt = self.departure_time
+        dd = self._yyyymmdd
+
+        time_past_dep = DateConverter(dt=at_datetime)\
+            .compute_delay_from(special_date=dd, special_time=dt)
+
+        if seconds:
+            # return number of seconds instead of boolean
+            return time_past_dep
+
+        return (time_past_dep >= 0)
 
 
 class Stop(RdbModel):

@@ -7,8 +7,16 @@ import collections
 from datetime import datetime
 
 import pandas as pd
+from pynamodb.exceptions import DoesNotExist
 
-from api_etl.utils_misc import get_paris_local_datetime_now
+# from sqlalchemy.orm import aliased
+from sqlalchemy.sql import func
+
+if __name__ == '__main__':
+    import logging.config
+    logging.config.fileConfig('logging.conf')
+
+from api_etl.utils_misc import get_paris_local_datetime_now, DateConverter
 from api_etl.utils_rdb import RdbProvider
 from api_etl.utils_mongo import mongo_async_upsert_items
 from api_etl.models import (
@@ -17,36 +25,44 @@ from api_etl.models import (
 )
 
 
-logger = logging.getLogger(__name__)
 pd.options.mode.chained_assignment = None
 
 
 class ResultSerializer():
     """ This class transforms a sqlalchemy result in an easy to manipulate
     object.
-    \nIt will:
-    \n-set result as a nested dict
-    \n-set result as flat dict
-    \n-if a StopTime is present, it will request RealTime to dynamo database,
+    The result can be:
+    - an object containing rdb models instances: (StopTime,Trip,Calendar)
+    - a model instance: StopTime or Trip or Calendar, etc
+
+    If a StopTime is present, it can request RealTime to dynamo database,
     for the day given as parameter (today if none provided)
     """
 
     def __init__(self, raw_result):
         self._raw = raw_result
 
-    def get_nested_dict(self, realtime=True):
-        # Sqlalchemy results have a _asdict() method.
-        nested_dict = self._clean_extend_dict(self._raw._asdict())
-        if realtime:
-            return self._extend_dict_with_realtime(nested_dict)
+        if hasattr(raw_result, "_asdict"):
+            # if sqlalchemy result, has _asdict method
+            for key, value in raw_result._asdict().items():
+                setattr(self, key, value)
         else:
-            return nested_dict
+            # or if sqlalchemy single model
+            setattr(self, raw_result.__class__.__name__, raw_result)
 
-    def get_flat_dict(self, realtime=True):
-        return self._flatten(self.get_nested_dict(realtime=realtime))
+        self._realtime_query_day = None
+        self._realtime_found = None
+
+    def get_nested_dict(self):
+        return self._clean_extend_dict(self.__dict__)
+
+    def get_flat_dict(self):
+        return self._flatten(self.get_nested_dict())
 
     def has_stoptime(self):
-        return hasattr(self._raw, "StopTime")
+        """Necessary to know if we should compute realtime requests.
+        """
+        return hasattr(self, "StopTime")
 
     def has_realtime(self):
         """ Returns:
@@ -55,21 +71,18 @@ class ResultSerializer():
         \n- True, if stoptime is present, request has been made, and realtime
         has been found
         """
-        if not hasattr(self._raw, "StopTime"):
-            # No StopTime present
-            return None
-
-        if not hasattr(self._raw.StopTime, "realtime_found"):
-            # StopTime object present, but request not made
-            return None
-
-        return self._raw.StopTime.realtime_found
+        return self._realtime_found
 
     def _clean_extend_dict(self, odict):
         ndict = {}
         for key, value in odict.items():
             if not key.startswith('_'):
-                if hasattr(value, "__dict__"):
+                if isinstance(value, RealTimeDeparture):
+                    # RealTimeDeparture has a __dict__ attribute, but
+                    # it returns a dict with attribute_values as key
+                    ndict[key] = self._clean_extend_dict(
+                        value.attribute_values)
+                elif hasattr(value, "__dict__"):
                     ndict[key] = self._clean_extend_dict(value.__dict__)
                 elif isinstance(value, dict):
                     ndict[key] = self._clean_extend_dict(value)
@@ -87,67 +100,131 @@ class ResultSerializer():
                 items.append((new_key, v))
         return dict(items)
 
-    def perform_realtime_query(self, yyyymmdd):
+    def get_realtime_query_index(self, yyyymmdd):
+        """Return (station_id, day_train_num) query index for real departures
+        dynamo table.
+        """
+        assert self.has_stoptime()
+        return self.StopTime.get_realtime_index(yyyymmdd=yyyymmdd)
+
+    def set_realtime(self, yyyymmdd, realtime_object=None):
+        """This method is used to propagate results when batch queries are
+        performed by the ResultSetSerializer, or when a single query is made.
+
+        It will add some meta information about it.
+        """
+        self._realtime_query_day = yyyymmdd
+
+        if realtime_object:
+            assert isinstance(realtime_object, RealTimeDeparture)
+            # setattr(self._raw, 'RealTime', realtime_object)
+            self.RealTime = realtime_object
+            # self._raw.RealTime = realtime_object
+            self._realtime_found = True
+        else:
+            self._realtime_found = False
+
+    def perform_realtime_query(self, yyyymmdd, ignore_error=True):
         """This method will perform a query to dynamo to get realtime
         information about the StopTime in this result object only.
         \nIt requires a day, because a given trip_id can be on different dates.
-
         """
         assert self.has_stoptime()
-        # Update StopTime object
-        self._raw.StopTime.get_realtime_info(yyyymmdd=yyyymmdd)
+        station_id, day_train_num = self.get_realtime_query_index(yyyymmdd)
 
-    def get_realtime_query_index(self, yyyymmdd):
-        """Query index depends on the requested day.
+        # Try to get it from dynamo
+        try:
+            realtime_object = RealTimeDeparture.get(
+                hash_key=station_id,
+                range_key=day_train_num
+            )
+            self.set_realtime(
+                yyyymmdd=yyyymmdd,
+                realtime_object=realtime_object
+            )
+
+        except DoesNotExist:
+            self.set_realtime(
+                yyyymmdd=yyyymmdd,
+                realtime_object=False
+            )
+            logging.info("Realtime not found for %s, %s" %
+                         (station_id, day_train_num))
+            if not ignore_error:
+                raise DoesNotExist
+
+    def compute_trip_state(self, at_datetime=None):
+        """ This method will add a dictionary in the "TripState" attribute.
+
+        It will be made of:
+        - at_time: the time considered
+        - delay (between schedule and realtime) if realtime is found
+        - passed_schedule: has train passed based on schedule information, at
+        time passed as paramater (if none provided = now).
+        - passed_realtime: has train passed based on realtime information.
         """
-        assert self.has_stoptime()
-        return self._raw.StopTime.get_realtime_index(yyyymmdd=yyyymmdd)
+        if not at_datetime:
+            at_datetime = get_paris_local_datetime_now()
+        assert isinstance(at_datetime, datetime)
+        self.TripState = {}
 
-    def set_realtime(self, realtime):
-        """This method will set realtime object in as a StopTime attribute."""
-        assert self.has_stoptime()
-        assert isinstance(realtime, RealTimeDeparture)
-        # Update StopTime object
-        self._raw.StopTime.set_realtime(realtime)
+        self.TripState["at_datetime"] = at_datetime.strftime("%Y%m%d-%H:%M:%S")
 
-    def _extend_dict_with_realtime(self, nested_dict):
+        if self.has_stoptime():
+            self.TripState["passed_schedule"] = self.StopTime\
+                .has_passed(at_datetime=at_datetime)
+        else:
+            self.TripState["passed_schedule"] = "Unknown"
+
+        if self.has_realtime():
+            self.TripState["delay"] = self._delay_schedule_vs_realtime()
+            self.TripState["passed_realtime"] = self.RealTime\
+                .has_passed(at_datetime=at_datetime)
+        else:
+            self.TripState["delay"] = "Unknown"
+            self.TripState["passed_realtime"] = "Unknown"
+
+    def _delay_schedule_vs_realtime(self):
+        """ Between scheduled 'stop time' departure time, and realtime expected
+        departure time.
+        """
+        assert self.has_realtime()
+
+        sdt = self.StopTime.departure_time
+        # _realtime_query_day attribute is set when performing realtime query
+        sdd = self._realtime_query_day
+        rtdt = self.RealTime.expected_passage_time
+        rtdd = self.RealTime.expected_passage_day
+        # Schedule and realtime are both in special format
+        # allowing hour to go up to 27
+        delay = DateConverter(special_date=rtdd, special_time=rtdt)\
+            .compute_delay_from(special_date=sdd, special_time=sdt)
+        return delay
+
+    def _normalize_realtime(self, ndict):
         """
         In order to have consistent output, all missing attributes are set to
         unknown if not present.
-        \nIt will add information to nested_dict, and recompute flat_dict
         """
-        if not self.has_stoptime():
-            return nested_dict
-
-        try:
-            nested_dict["RealTime"] = self._raw.StopTime._realtime_dict
-            nested_dict["Delay"] = self._raw.StopTime.delay
-            nested_dict["Passed"] = self._raw.StopTime.passed
-
-        except (KeyError, AttributeError):
-            nested_dict["RealTime"] = {}
-            nested_dict["Delay"] = "Unknown"
-            nested_dict["Passed"] = "Unknown"
-
         # Add all missing attributes of RealTimeDeparture object so all
         # elements have the same shape
-        for key, value in RealTimeDeparture._get_attributes().items():
-            if key not in nested_dict["RealTime"]:
-                nested_dict["RealTime"][key] = "Unknown"
+        if "RealTime" not in ndict:
+            ndict["RealTime"] = {}
 
-        return nested_dict
+        for key, value in RealTimeDeparture._get_attributes().items():
+            if key not in ndict:
+                ndict["RealTime"][key] = "Unknown"
 
 
 class ResultSetSerializer():
 
     def __init__(self, raw_result, yyyymmdd=None):
         if isinstance(raw_result, list):
-            self._raws = raw_result
+            self.results = list(map(ResultSerializer, raw_result))
         else:
-            self._raws = [raw_result]
+            self.results = [ResultSerializer(raw_result)]
 
         self.yyyymmdd = yyyymmdd
-        self.results = list(map(ResultSerializer, self._raws))
         self.mongo_collection = "flat_stop_times"
 
     def _index_stoptime_results(self, yyyymmdd):
@@ -159,17 +236,17 @@ class ResultSetSerializer():
             if result.has_stoptime()
         }
 
-    def get_nested_dicts(self, realtime_only=False, normalize=True):
+    def get_nested_dicts(self, realtime_only=False):
         if realtime_only:
-            return [x.get_nested_dict(normalize) for x in self.results if x.has_realtime()]
+            return [x.get_nested_dict() for x in self.results if x.has_realtime()]
         else:
-            return [x.get_nested_dict(normalize) for x in self.results]
+            return [x.get_nested_dict() for x in self.results]
 
-    def get_flat_dicts(self, realtime_only=False, normalize=True):
+    def get_flat_dicts(self, realtime_only=False):
         if realtime_only:
-            return [x.get_flat_dict(normalize) for x in self.results if x.has_realtime()]
+            return [x.get_flat_dict() for x in self.results if x.has_realtime()]
         else:
-            return [x.get_flat_dict(normalize) for x in self.results]
+            return [x.get_flat_dict() for x in self.results]
 
     def batch_realtime_query(self, yyyymmdd):
         # 1: get all elements that have StopTime
@@ -177,13 +254,24 @@ class ResultSetSerializer():
         self._index_stoptime_results(yyyymmdd)
         # 3: send a batch request to get elements
         # 4: dispatch correcly answers
-        self._indexed_results
         item_keys = [key for key, value in self._indexed_results.items()]
         for item in RealTimeDeparture.batch_get(item_keys):
             index = (item.station_id, item.day_train_num)
-            self._indexed_results[index].set_realtime(item)
-        # 5: make results available
-        self.results = [value for key, value in self._indexed_results.items()]
+            self._indexed_results[index].set_realtime(yyyymmdd, item)
+        # 5: ResultSerializer instances objects are then already updated
+        # and available under self.results
+
+    def first_realtime_index(self):
+        """Mostly for debugging: returns index of first result which has
+        realtime.
+        """
+        for i, el in enumerate(self.results):
+            if el.has_realtime():
+                return i
+
+    def compute_trip_states(self, at_datetime=None):
+        for res in self.results:
+            res.compute_trip_state(at_datetime=at_datetime)
 
     def save_in_mongo(self, collection=None, objects=None):
         index_fields = ["StopTime_trip_id", "Stop_stop_id"]
@@ -222,6 +310,39 @@ class DBQuerier():
         datetime.strptime(yyyymmdd, "%Y%m%d")
         self.yyyymmdd = yyyymmdd
 
+    def routes(self):
+        results = self.provider.get_session()\
+            .query(Route)\
+            .distinct(Route.route_short_name)\
+            .all()
+        return ResultSetSerializer(results)
+
+    def stations(self, on_route_short_name=None):
+        """
+        Return list of stations
+        Stop -> StopTime -> Trip -> Route
+        """
+        if on_route_short_name:
+            on_route_short_name = str(on_route_short_name)
+
+        results = self.provider.get_session()\
+            .query(Stop)
+
+        if on_route_short_name:
+            results = results\
+                .filter(Stop.stop_id == StopTime.stop_id)\
+                .filter(StopTime.trip_id == Trip.trip_id)\
+                .filter(Trip.route_id == Route.route_id)\
+                .filter(Route.route_short_name == on_route_short_name)\
+
+        # Distinct, and only stop points (stop area are duplicates
+        # of stop points)
+        results = results.distinct(Stop.stop_id)\
+            .filter(Stop.stop_id.like("StopPoint%"))\
+            .all()
+
+        return ResultSetSerializer(results)
+
     def services_of_day(self, yyyymmdd=None):
         """Return all service_id's for a given day.
         """
@@ -258,6 +379,87 @@ class DBQuerier():
         serv_on_day = list(serv_on_day)
 
         return serv_on_day
+
+    def trips_of_day(
+        self, yyyymmdd=None, active_at_time=None, has_begun_at_time=None, not_yet_arrived_at_time=None
+    ):
+        """Returns list of strings (trip_ids).
+        """
+
+        # Args parsing:
+        yyyymmdd = yyyymmdd or self.yyyymmdd
+        # Will raise error if wrong format
+        datetime.strptime(yyyymmdd, "%Y%m%d")
+        # active_at is set if other args are None
+        has_begun_at_time = has_begun_at_time or active_at_time
+        not_yet_arrived_at_time = not_yet_arrived_at_time or active_at_time
+
+        if not has_begun_at_time and not not_yet_arrived_at_time:
+            # Case where no constraint
+            results = self.provider.get_session()\
+                .query(Trip.trip_id)\
+                .filter(Trip.service_id.in_(self.services_of_day(yyyymmdd)))\
+                .all()
+            return list(map(lambda x: x[0], results))
+
+        if has_begun_at_time:
+            # Begin constraint: "hh:mm:ss" up to 26 hours
+            # trips having begun at time:
+            # => first stop departure_time must be < time
+            results = self.provider.get_session()\
+                .query(Trip.trip_id)\
+                .filter(Trip.service_id.in_(self.services_of_day(yyyymmdd)))\
+                .filter(StopTime.trip_id == Trip.trip_id)\
+                .filter(StopTime.stop_sequence == "0")\
+                .filter(StopTime.departure_time <= has_begun_at_time)\
+                .all()
+            begin_results = list(map(lambda x: x[0], results))
+
+        if not_yet_arrived_at_time:
+            # End constraint: trips not arrived at time
+            # => last stop departure_time must be > time
+            session = self.provider.get_session()
+            results = session\
+                .query(Trip.trip_id)\
+                .filter(Trip.service_id == Calendar.service_id)\
+                .filter(Trip.service_id.in_(self.services_of_day(yyyymmdd)))\
+                .filter(StopTime.trip_id == Trip.trip_id)\
+                .filter(
+                    StopTime.stop_sequence == session
+                    .query(func.max(StopTime.stop_sequence))
+                    .correlate(Trip)
+                )\
+                .filter(StopTime.departure_time >= not_yet_arrived_at_time)\
+                .all()
+            end_results = list(map(lambda x: x[0], results))
+
+        if not_yet_arrived_at_time and has_begun_at_time:
+            return list(set(begin_results).intersection(end_results))
+
+        elif has_begun_at_time:
+            return begin_results
+
+        elif not_yet_arrived_at_time:
+            return end_results
+
+    def stops_of_day(self, yyyymmdd, stops_only=False):
+        if stops_only:
+            results = self.provider.get_session()\
+                .query(StopTime)\
+                .filter(StopTime.trip_id.in_(self.trips_of_day(yyyymmdd)))\
+                .all()
+            return ResultSetSerializer(results, yyyymmdd=yyyymmdd)
+        else:
+            results = self.provider.get_session()\
+                .query(StopTime, Trip, Stop, Route, Agency, Calendar)\
+                .filter(Trip.trip_id == StopTime.trip_id)\
+                .filter(Stop.stop_id == StopTime.stop_id)\
+                .filter(Trip.route_id == Route.route_id)\
+                .filter(Agency.agency_id == Route.agency_id)\
+                .filter(Calendar.service_id == Trip.service_id)\
+                .filter(StopTime.trip_id.in_(self.trips_of_day(yyyymmdd)))\
+                .all()
+            return ResultSetSerializer(results, yyyymmdd=yyyymmdd)
 
     def trip_stops(self, trip_id, yyyymmdd=None):
         """Return all stops of a given trip, on a given day.
@@ -305,5 +507,4 @@ class DBQuerier():
             .filter(Calendar.service_id.in_(self.services_of_day(yyyymmdd)))\
             .all()
 
-        self.resultset = ResultSetSerializer(results, yyyymmdd=yyyymmdd)
-        return self.resultset
+        return ResultSetSerializer(results, yyyymmdd=yyyymmdd)
