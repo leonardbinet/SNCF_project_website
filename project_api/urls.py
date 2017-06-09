@@ -4,8 +4,8 @@ from project_api import views
 
 urlpatterns = [
     url(r'^$', views.index, name='api'),
-    url(r'^station/$', views.StationStopTimes.as_view(), name='api_station'),
-    url(r'^trip/$', views.TripStopTimes.as_view(), name='api_trip'),
+    url(r'^station/$', views.Stations.as_view(), name='api_station'),
+    url(r'^stoptimes/$', views.StopTimes.as_view(), name='api_trip'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

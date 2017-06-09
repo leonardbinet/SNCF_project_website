@@ -29,11 +29,11 @@
     global.initDatatable = function(){
         global.datatable = $('#active-trains-table').DataTable( {
             columns: [
-                { title: "Train number", data: "trip", width: "20%" },
-                { title: "Estimated Delay (secs)" , data: "estimatedDelay", width: "10%"},
-                { title: "From station", data: "from", width: "20%"},
-                { title: "To station", data: "to" , width: "20%"},
-                { title: "On subsection", data: "subsection"}
+                { title: "Trip id", data: "Trip.trip_id"},
+                { title: "Route id" , data: "Trip.route_id"},
+                { title: "Service id", data: "Trip.service_id"},
+                { title: "Direction", data: "Trip.direction_id"},
+                { title: "Headsign", data: "Trip.trip_headsign"}
             ]
         } );
     };

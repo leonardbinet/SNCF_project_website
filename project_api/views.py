@@ -2,13 +2,30 @@
 """
 
 from datetime import datetime
+from distutils.util import strtobool
 
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import generics
 
 from api_etl.query import DBQuerier
-from project_api.serializers import FullStopTimeSerializer
+from api_etl.serializers import (
+    ResultSetSerializer, NestedSerializer,
+    CalendarSerializer, CalendarDateSerializer, TripSerializer,
+    StopTimeSerializer, StopSerializer, AgencySerializer,
+    RouteSerializer, AgencySerializer, RealTimeDepartureSerializer
+)
+
+
+def extractLevel(request, default=1):
+    """ Extract level from get parameters and parse it.
+    """
+    level = request.query_params.get('level', default)
+    try:
+        level = int(level)
+    except:
+        level = default
+    return level
 
 
 def index(request):
@@ -16,79 +33,130 @@ def index(request):
     return render(request, 'project_api/index.html', context)
 
 
-class StationStopTimes(generics.ListCreateAPIView):  # APIView):
+class Stations(generics.ListCreateAPIView):
     """
-    Query a given station to get:
-    - past trains
-    - expected trains (those displayed on stations' boards)
+    Return stations objects.
     """
 
     def get_serializer_class(self):
-        return FullStopTimeSerializer
+        return StopSerializer
 
     def get_queryset(self):
-        # Get station information. Depending on parameter "info" passed:
-        # - real-time
-        # - schedule
-        # - prediction
+        """ Queryset provider
+        """
+        # ARGS PARSING
+        uic_code = self.request.query_params.get('uic_code', None)
+        level = extractLevel(self.request)
 
-        station_id = self.request.query_params.get('station_id', None)
+        # uic_code
+        if uic_code:
+            uic_code = str(uic_code)
+            assert (len(uic_code) == 7) or (len(uic_code) == 8)
+
+        # PERFORM QUERY
+        querier = DBQuerier()
+        # Get Schedule
+        results = querier.stations(level=level)
+        return results
+
+
+class StopTimes(generics.ListCreateAPIView):
+    """
+    For a given day provides scheduled stoptimes.
+
+    """
+
+    def get_serializer_class(self):
+        level = extractLevel(self.request)
+
+        if level == 1:
+            return StopTimeSerializer
+        else:
+            return NestedSerializer
+
+    def get_queryset(self):
+        """ Queryset provider
+        """
+        # ARGS PARSING
+        uic_code = self.request.query_params.get('uic_code', None)
         day = self.request.query_params.get('day', None)
+        trip_id_filter = self.request.query_params.get('trip_id_filter', False)
+        realtime = self.request.query_params.get('realtime', None)
+        realtime_only = self.request.query_params.get('realtime_only', None)
+        level = extractLevel(self.request)
 
+        limit = self.request.query_params.get('query_limit', 1000)
+
+        # Day
+        if day:
+            try:
+                datetime.strptime(day, "%Y%m%d")
+            except:
+                day = False
+
+        # Trip active at time: default value is set to now
+        trip_active_at_time = self.request.query_params\
+            .get('trip_active_at_time', True)
+        if trip_active_at_time:
+            try:
+                trip_active_at_time = strtobool(trip_active_at_time)
+            except:
+                # if it doesn't work, keep it as such, it is supposed to be
+                # time and handled by dbquery methods
+                pass
+
+        # Realtime or not
+        if realtime:
+            try:
+                realtime = strtobool(realtime)
+            except:
+                pass
+
+        # Realtime only
+        if realtime_only:
+            try:
+                realtime_only = strtobool(realtime_only)
+            except:
+                pass
+
+        # Day
         if day:
             try:
                 datetime.strptime(day, "%Y%m%d")
             except:
                 return Response({"Error": "day must be in yyyymmdd format"})
 
-        if not station_id:
-            return Response({"Error": "must specify station_id"})
+        # Uic code
+        if uic_code:
+            uic_code = str(uic_code)
+            assert (len(uic_code) == 7) or (len(uic_code) == 8)
 
+        # Limit
+        if isinstance(limit, str):
+            try:
+                limit = int(limit)
+            except:
+                limit = 1000
+
+        # PERFORM QUERY
         querier = DBQuerier(yyyymmdd=day)
         # Get Schedule
-        result = querier.station_trips_stops(
-            station_id=station_id,
-            yyyymmdd=day
+        result = querier.stoptimes(
+            on_day=day,
+            uic_filter=uic_code,
+            level=level,
+            trip_active_at_time=trip_active_at_time,
+            trip_id_filter=trip_id_filter,
+            limit=limit
         )
+
         # Get realtime
-        result.batch_realtime_query(yyyymmdd=day)
+        if realtime and level > 0:
+            result_serializer = ResultSetSerializer(result, yyyymmdd=day)
+            result_serializer.batch_realtime_query()
+            response = result_serializer\
+                .get_nested_dicts(realtime_only=realtime_only)
+            return response
 
-        response = result.get_nested_dicts(realtime_only=False)
-
-        return response
-
-
-class TripStopTimes(generics.ListCreateAPIView):
-    """
-    Query a given trip_id information about stops:
-     - real-time
-     - schedule
-     - predictions
-    """
-
-    def get_serializer_class(self):
-        return FullStopTimeSerializer
-
-    def get_queryset(self):
-
-        trip_id = self.request.query_params.get('trip_id', None)
-        day = self.request.query_params.get('day', None)
-
-        if day:
-            try:
-                datetime.strptime(day, "%Y%m%d")
-            except:
-                return Response({"Error": "day must be in yyyymmdd format"})
-
-        if not trip_id:
-            return Response({"Error": "must specify trip_id"})
-
-        querier = DBQuerier(yyyymmdd=day)
-        # Get Schedule
-        result = querier.trip_stops(trip_id=trip_id, yyyymmdd=day)
-        # Get realtime
-        result.batch_realtime_query(yyyymmdd=day)
-
-        response = result.get_nested_dicts(realtime_only=False)
-
-        return response
+        else:
+            return result

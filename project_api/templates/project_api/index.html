@@ -32,7 +32,7 @@
                         <li>
                             STATION: query a station, on given day (today if not specified) to get information on trips.
                             </br>
-                            <a href="{% url 'api_station' %}?station_id=8727622&day=20170216&info=real-time"> EXAMPLE: "{% url 'api_station' %}?station_id=8727622&day=20170216&info=real-time"</a>
+                            <a href="{% url 'api_station' %}?uic_code=8727622&day=20170216"> EXAMPLE: "{% url 'api_station' %}?uic_code=8727622&day=20170216"</a>
                             </br>
 
                             To access it: <a href="{% url 'api_station' %}"> {% url 'api_station' %} </a>
@@ -40,7 +40,7 @@
                             With parameters:
                             <ul>
                                 <li>
-                                    Required: station_id: in a 7 digits format, for instance, station_id=8727622
+                                    Required: uic_code: in a 7 or 8 digits format, for instance, uic_code=8727622
                                 </li>
                                 <li>
                                     Optional: day: in a yyyymmdd format, for instance, day=20170217. If not specified, today.
@@ -54,7 +54,7 @@
                         <li>
                             TRIP: query a trip_id to get information about its stops:
                             </br>
-                            <a href="{% url 'api_trip' %}?trip_id=DUASN156466F01002-1_402666&info=schedule"> EXAMPLE: {% url 'api_trip' %}?trip_id=DUASN156466F01002-1_402666&info=schedule"</a>
+                            <a href="{% url 'api_trip' %}?trip_id=DUASN156466F01002-1_402666"> EXAMPLE: {% url 'api_trip' %}?trip_id=DUASN156466F01002-1_402666"</a>
 
                             </br>
                             To access it: <a href="{% url 'api_trip' %}"> {% url 'api_trip' %} </a>
