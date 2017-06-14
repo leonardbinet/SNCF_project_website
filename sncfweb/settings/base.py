@@ -152,7 +152,7 @@ if not LOGS_FILE:
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'formatters': {
         'verbose': {
             'format': '%(levelname)s-%(asctime)s-%(module)s-%(message)s'
@@ -176,7 +176,7 @@ LOGGING = {
         'django': {
             'handlers': ['file', 'console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'propagate': True,
+            'propagate': False,
         },
     },
 }

@@ -5,7 +5,7 @@ Two main parts:
     an important part is the ability to extend schedule results with realtime
     information.
 
-- FullStopTimeSerializer and directs Serializers: raw serializers:
+- NestedSerializer and directs Serializers: raw serializers:
     main ability is to provide a suitable serializer for django rest api,
     especially for pagination purposes.
 
@@ -18,64 +18,14 @@ import collections
 from datetime import datetime
 
 import pandas as pd
-from rest_framework import serializers
 
 from pynamodb.exceptions import DoesNotExist
 
 from api_etl.utils_misc import get_paris_local_datetime_now, DateConverter
 from api_etl.utils_mongo import mongo_async_upsert_items
-from api_etl.models import (
-    Calendar, CalendarDate, Trip, StopTime, Stop, Agency, Route,
-    RealTimeDeparture
-)
+from api_etl.models import RealTimeDeparture
 
 pd.options.mode.chained_assignment = None
-
-
-def ModelToSerializerFactory(class_name, ExtractedClass):
-    """ Transforms a model class in a corresponding Serializer class
-    """
-    BaseClass = serializers.Serializer
-
-    class_body = {}
-
-    for key, value in ExtractedClass.__dict__.items():
-        # for all non-hidden attributes
-        if not key.startswith("_") and not callable(value):
-            # set them as CharFields
-            class_body[key] = serializers.CharField(
-                max_length=300,
-                required=False
-            )
-
-    newclass = type(class_name, (BaseClass,), class_body)
-    return newclass
-
-# Declaring my new serializers
-# Calendar, CalendarDate, Trip, StopTime, Stop, Agency, Route, RealTimeDeparture
-
-CalendarSerializer = ModelToSerializerFactory("CalendarSerializer", Calendar)
-CalendarDateSerializer = ModelToSerializerFactory(
-    "CalendarDateSerializer", CalendarDate)
-TripSerializer = ModelToSerializerFactory("TripSerializer", Trip)
-StopTimeSerializer = ModelToSerializerFactory("StopTimeSerializer", StopTime)
-StopSerializer = ModelToSerializerFactory("StopSerializer", Stop)
-AgencySerializer = ModelToSerializerFactory("AgencySerializer", Agency)
-RouteSerializer = ModelToSerializerFactory("RouteSerializer", Route)
-AgencySerializer = ModelToSerializerFactory("AgencySerializer", Agency)
-RealTimeDepartureSerializer = ModelToSerializerFactory(
-    "RealTimeDepartureSerializer", RealTimeDeparture)
-
-
-class NestedSerializer(serializers.Serializer):
-    Calendar = CalendarSerializer(required=False)
-    CalendarDate = CalendarDateSerializer(required=False)
-    Trip = TripSerializer(required=False)
-    StopTime = StopTimeSerializer(required=False)
-    Stop = StopSerializer(required=False)
-    Agency = AgencySerializer(required=False)
-    Route = RouteSerializer(required=False)
-    RealTime = RealTimeDepartureSerializer(required=False)
 
 
 class ResultSerializer():
@@ -274,7 +224,7 @@ class ResultSetSerializer():
         else:
             self.results = [ResultSerializer(raw_result)]
 
-        self.yyyymmdd = yyyymmdd
+        self.yyyymmdd = yyyymmdd or get_paris_local_datetime_now().strftime("%Y%m%d")
         self.mongo_collection = "flat_stop_times"
 
     def _index_stoptime_results(self, yyyymmdd):
@@ -288,17 +238,21 @@ class ResultSetSerializer():
 
     def get_nested_dicts(self, realtime_only=False):
         if realtime_only:
-            return [x.get_nested_dict() for x in self.results if x.has_realtime()]
+            return [x.get_nested_dict() for x in self.results
+                    if x.has_realtime()]
         else:
             return [x.get_nested_dict() for x in self.results]
 
     def get_flat_dicts(self, realtime_only=False):
         if realtime_only:
-            return [x.get_flat_dict() for x in self.results if x.has_realtime()]
+            return [x.get_flat_dict() for x in self.results
+                    if x.has_realtime()]
         else:
             return [x.get_flat_dict() for x in self.results]
 
     def batch_realtime_query(self, yyyymmdd=None):
+        logging.info(
+            "Trying to get realtime information from DynamoDB for %s items." % len(self.results))
         yyyymmdd = yyyymmdd or self.yyyymmdd
         # 1: get all elements that have StopTime
         # 2: build all indexes (station_id, day_train_num)
@@ -306,9 +260,14 @@ class ResultSetSerializer():
         # 3: send a batch request to get elements
         # 4: dispatch correcly answers
         item_keys = [key for key, value in self._indexed_results.items()]
+
+        i = 0
         for item in RealTimeDeparture.batch_get(item_keys):
             index = (item.station_id, item.day_train_num)
             self._indexed_results[index].set_realtime(yyyymmdd, item)
+            i += 1
+
+        logging.info("Found realtime information for %s items." % i)
         # 5: ResultSerializer instances objects are then already updated
         # and available under self.results
 

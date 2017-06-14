@@ -16,7 +16,6 @@
 <link href="{% static 'gentelella/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css' %}" rel="stylesheet">
 <link href="{% static 'gentelella/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css' %}" rel="stylesheet">
 
-
 {% endblock %}
 
 {% block content %}
@@ -60,7 +59,7 @@
                     <h3>Active trains</h3>
                     -->
                     
-                    <table id="active-trains-table" class="display" width="100%"></table>
+                    <table id="active-trains-table" class="table table-striped table-bordered" width="100%"></table>
 
 
                 </div>
@@ -75,6 +74,10 @@
 
                 <!-- /.panel-heading -->
                 <div class="panel-body">
+                    <div>Chosen trip: <b id="chosen-trip-text"></b></div>
+                    <br/>
+
+                    <table id="focused-trip-stoptimes-table" class="table table-striped table-bordered" width="100%"></table>
 
                 </div>
                 <!-- /.panel-body -->
@@ -93,12 +96,11 @@
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
-<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js">
-</script>
+<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
 <script>
 var ajaxUrl = "/api/station/?station_id=8727622&info=real-time"
 </script>
-<script src="{% static 'board/js/interface.js' %}"></script>
+<script src="{% static 'board/js/tables.js' %}"></script>
 <script src="{% static 'board/js/choices.js' %}"></script>
 
 

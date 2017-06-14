@@ -17,12 +17,14 @@
         <title>SNCF Time Arrival Prediction</title>
         {% endblock %}
 
+        <!-- Bootstrap Core CSS -->
+        <link href="{% static 'gentelella/vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+        
         {% block header_up %}
         {% endblock %}
 
 
-        <!-- Bootstrap Core CSS -->
-        <link href="{% static 'gentelella/vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+
 
         <!-- Fonts -->
         <link href="{% static 'gentelella/vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
@@ -42,9 +44,6 @@
         <!-- bootstrap-daterangepicker -->
         <link href="{% static 'gentelella/vendors/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
 
-        <!-- Custom Theme Style -->
-        <link href="{% static 'gentelella/build/css/custom.min.css' %}" rel="stylesheet">
-
 
         {% block header_tail %}
 
@@ -52,6 +51,9 @@
             <link href="{% static 'gentelella/vendors/morris.js/morris.css' %}" rel="stylesheet">
 
         {% endblock %}
+
+        <!-- Custom Theme Style -->
+        <link href="{% static 'gentelella/build/css/custom.min.css' %}" rel="stylesheet">
 
     </head>
 
