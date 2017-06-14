@@ -4,6 +4,10 @@
         
         // Trip table
         global.tripDatatable = $('#active-trains-table').DataTable( {
+                processing:true,
+                language: {
+                    processing: "Loading..."
+                },
             columns: [
                 { title: "Trip id", data: "Trip.trip_id"},
                 { title: "Service id", data: "Trip.service_id"},
@@ -14,9 +18,12 @@
         } );
         
         
-        
         // Trip focus Stoptimes table
         global.focusedTripDatatable = $('#focused-trip-stoptimes-table').DataTable( {
+            "processing":true,
+            "language": {
+                    "processing": "Loading..."
+                },
             columns: [
                 { title: "Stop sequence", data: "StopTime.stop_sequence"},
                 { title: "Scheduled departure time" , data: "StopTime.departure_time"},

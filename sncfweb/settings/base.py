@@ -140,10 +140,8 @@ STATICFILES_FINDERS = [
 BOWER_COMPONENTS_ROOT = path.join(BASE_DIR, 'components')
 
 BOWER_INSTALLED_APPS = (
-    #'jquery',
-    #'bootstrap',
-    #'BlackrockDigital/startbootstrap-sb-admin-2'
     'gentelella',
+    'd3'
 )
 
 LOGS_FILE = os.environ.get('logs_directory', None)

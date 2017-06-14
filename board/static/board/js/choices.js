@@ -24,7 +24,7 @@
         ajaxCallTrips(line);
     }
 
-    // Update selected line
+    // Update selected Line
     function refreshLineChoiceText(){
         $("#chosen-line-text").text(function(){
             if (!global.selectedLine){return "First choose your line."}
@@ -32,7 +32,7 @@
         })
     }
 
-    // Ajax call to update table
+    // Ajax update Trips on selected Line
     function ajaxCallTrips(selectedLine){
         console.log("Ajax call for datatable.")
         var url = "/api/trips/";
@@ -45,6 +45,7 @@
         $.get(url, data, success)
     }
     
+    // Ajax update StopTimes on selected Trip
     function ajaxCallStopTimes(selectedTrip){
         console.log("Ajax call for datatable focused trip stoptimes.")
         var url = "/api/stoptimes/";
@@ -58,12 +59,23 @@
         $.get(url, data, success)
     }
     
+    // On click on table
     function tripTableInteractionInit(){
         $('#active-trains-table tbody').on('click', 'tr', function () {
             var data = global.tripDatatable.row( this ).data();
             onClickTripRow(data);
+            
+            // Update class: selected for row display
+            if ( $(this).hasClass('selected') ) {
+                $(this).removeClass('selected');
+            }
+            else {
+                global.tripDatatable.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
         } );
     }
+    
     
     function onClickTripRow(data){
         // set focused trip
@@ -71,7 +83,7 @@
         // refresh what is written in focus text
         $("#chosen-trip-text").text(function(){
             if (!data){return "First choose your trip (click on row)."}
-            return data.trip_id;
+            return "you chose "+data.Trip.trip_id;
         })
         // emptu table
         global.updateTableData(global.focusedTripDatatable);
