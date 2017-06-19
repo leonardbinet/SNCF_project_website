@@ -1,0 +1,22 @@
+# Numerical packages
+pandas==0.19
+numpy
+# Djando
+Django==1.10.3
+django-bower==5.2.0
+djangorestframework
+pytz
+# Dynamo DB
+boto3
+pynamodb
+# Relational DB
+psycopg2
+sqlalchemy
+# Mongo
+mongoengine
+pymongo
+motor
+# For maps app (maybe will be deleted)
+requests
+navitia_client
+
