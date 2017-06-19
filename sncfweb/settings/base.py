@@ -32,6 +32,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -39,6 +40,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'sncfweb.urls'
@@ -73,18 +75,19 @@ TEMPLATES = [
 
 DATABASES = {
 
-    'default': {
+    'lite': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'mydatabase',
     },
 
-    #'other': {
-    #    'ENGINE': 'django.db.backends.mysql',
-    #    'NAME': DJANGO_DB_NAME,
-    #    'USER': DJANGO_DB_USER,
-    #    'PASSWORD': DJANGO_DB_PASSWORD,
-    #    'PORT': DJANGO_DB_PORT,
-    #},
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': get_secret("RDB_DJANGO_DB_NAME"),
+        'USER': get_secret("RDB_USER"),
+        'PASSWORD': get_secret("RDB_PASSWORD"),
+        'HOST': get_secret("RDB_HOST"),
+        'PORT': get_secret("RDB_PORT"),
+    },
 }
 
 
@@ -194,6 +197,9 @@ CACHES = {
         'LOCATION': 'cache_table',
     }
 }
+
+CACHE_MIDDLEWARE_SECONDS = 60
+
 
 # Endroit ou ce sera stocké sur le serveur
 # Soit cela est spécifié dans les variables d'environnment, soit on le

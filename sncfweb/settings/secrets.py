@@ -24,20 +24,20 @@ def get_secret(setting, my_secrets=secrets, env=True):
     """
     value = None
     # Try to get value from env then from file
+
+    try:
+        value = my_secrets[setting]
+        if env:
+            os.environ[setting] = value
+        return value
+    except KeyError:
+        logger.debug("Impossible to get %s from file" % setting)
+
     try:
         value = os.environ[setting]
         return value
     except KeyError:
         logger.debug("Impossible to get %s from environment" % setting)
 
-    try:
-        value = my_secrets[setting]
-    except KeyError:
-        logger.debug("Impossible to get %s from file" % setting)
+    logger.info("Impossible to find %s." % setting)
 
-    # If value found, set it back as env
-    if value and env:
-        os.environ[setting] = value
-        return value
-    else:
-        logger.warning("%s not found." % setting)
