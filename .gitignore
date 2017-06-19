@@ -1,27 +1,21 @@
 # Pycharm
 *.idea
 
+# Hidden
+hidden
+
 # pyc
 *.pyc
 
-# dsstore
-*.DS_Store
-
 # Bower
-components/*
-bower_components/*
+components/
 
 # Secrets
 secret.json
 .ebextensions/02_secrets.config
 
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
-
 #Temp
-temp/*
+temp/
 
 # Database
 mydatabase
