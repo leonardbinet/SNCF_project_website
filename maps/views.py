@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from multiprocessing import Pool
-from .utils import id_to_schedule, disruption_to_geojsons, geosjons_split_cancel_delay, query_mongo_active_disruptions, query_mongo_near_stations, query_and_save_disruptions
+from .utils import (
+    disruption_to_geojsons, geosjons_split_cancel_delay, query_mongo_active_disruptions,
+    query_mongo_near_stations, query_and_save_disruptions
+)
 
 
 def sncf_fr_map(request):

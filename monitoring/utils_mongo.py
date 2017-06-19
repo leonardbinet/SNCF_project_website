@@ -1,7 +1,6 @@
 """Module for specific mongo monitoring functions
 """
 
-import os
 from pymongo import MongoClient
 import pymongo
 from sncfweb.settings.secrets import get_secret

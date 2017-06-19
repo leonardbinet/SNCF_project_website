@@ -8,8 +8,8 @@ from distutils.util import strtobool
 from django.shortcuts import render
 from rest_framework import generics
 
-from api_etl.query import DBQuerier
-from api_etl.serializers import ResultSetSerializer
+from lib.api_etl.schedule_querier import DBQuerier
+from lib.api_etl.realtime_querier import ResultsSet
 from project_api.serializers import (
     NestedSerializer, CalendarSerializer, CalendarDateSerializer,
     TripSerializer, StopTimeSerializer, StopSerializer, AgencySerializer,
@@ -302,11 +302,14 @@ class StopTimes(generics.ListCreateAPIView):
             logger.info(
                 "Gathering REALTIME information for %s items."
                 % len(result))
-            result_serializer = ResultSetSerializer(
-                result, yyyymmdd=on_day
-                if on_day is not True else None)
-            result_serializer.batch_realtime_query(yyyymmdd=on_day if on_day is
-                                                   not True else None)
+            result_serializer = ResultsSet(
+                result, scheduled_day=on_day
+                if on_day is not True else None
+            )
+            result_serializer.batch_realtime_query(
+                scheduled_day=on_day if on_day is not True else None
+            )
+
             response = result_serializer\
                 .get_nested_dicts(realtime_only=realtime_only)
             return response

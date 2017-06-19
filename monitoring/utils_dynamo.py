@@ -1,7 +1,24 @@
 """Module with specific function for dynamo monitoring
 """
 
-from api_etl.utils_dynamo import dynamo_get_client
+
+import boto3
+
+from lib.api_etl.utils_secrets import get_secret
+
+# Set as environment variable: boto takes it directly
+AWS_DEFAULT_REGION = get_secret("AWS_DEFAULT_REGION", env=True)
+AWS_ACCESS_KEY_ID = get_secret("AWS_ACCESS_KEY_ID", env=True)
+AWS_SECRET_ACCESS_KEY = get_secret("AWS_SECRET_ACCESS_KEY", env=True)
+
+dynamodb = boto3.resource('dynamodb')
+
+
+def dynamo_get_client():
+    """
+    Return Dynamo client (credentials already set up)
+    """
+    return boto3.client("dynamodb")
 
 
 def check_dynamo_connection():

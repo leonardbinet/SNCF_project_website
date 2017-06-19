@@ -6,6 +6,9 @@ import logging
 import sys
 from os import path
 
+# Necessary for package loaded as git submodule (in lib folder) to find its imports
+sys.path.append("lib")
+
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 
