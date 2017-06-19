@@ -153,11 +153,17 @@ class Stations(generics.ListCreateAPIView):
         level = extractLevel(self.request)
         on_route_short_name = self.request.query_params\
             .get('on_route_short_name', None)
+
+        query_params = {
+            "level": level,
+            "on_route_short_name": on_route_short_name
+        }
+        displayParams(query_params)
+
         # PERFORM QUERY
         querier = DBQuerier()
-        # Get Schedule
         results = querier\
-            .stations(level=level, on_route_short_name=on_route_short_name)
+            .stations(**query_params)
         return results
 
 
@@ -199,25 +205,19 @@ class Trips(generics.ListCreateAPIView):
         on_route_short_name = self.request.query_params\
             .get('on_route_short_name', None)
 
-        info_params = {
+        query_params = {
             "active_at_time": active_at_time,
             "on_day": on_day,
             "level": level,
             "limit": limit,
             "on_route_short_name": on_route_short_name
         }
-        displayParams(info_params)
+        displayParams(query_params)
 
         # PERFORM QUERY
         querier = DBQuerier()
         # Get Schedule
-        results = querier.trips(
-            on_day=on_day,
-            active_at_time=active_at_time,
-            level=level,
-            limit=limit,
-            on_route_short_name=on_route_short_name
-        )
+        results = querier.trips(**query_params)
         return results
 
 
@@ -277,30 +277,26 @@ class StopTimes(generics.ListCreateAPIView):
         if realtime_only:
             realtime = True
 
-        info_params = {
-            "active_at_time": active_at_time,
+        query_params = {
+            "trip_active_at_time": active_at_time,
             "on_day": on_day,
             "level": level,
             "limit": limit,
-            "uic_code": uic_code,
+            "uic_filter": uic_code,
             "trip_id_filter": trip_id_filter,
-            "on_route_short_name": on_route_short_name,
+            "on_route_short_name": on_route_short_name
+        }
+        realtime_params = {
             "realtime": realtime,
             "realtime_only": realtime_only
         }
-        displayParams(info_params)
+
+        displayParams(query_params)
+        displayParams(realtime_params)
 
         # PERFORM QUERY
         querier = DBQuerier()
-        result = querier.stoptimes(
-            trip_active_at_time=active_at_time,
-            on_day=on_day,
-            level=level,
-            limit=limit,
-            uic_filter=uic_code,
-            trip_id_filter=trip_id_filter,
-            on_route_short_name=on_route_short_name
-        )
+        result = querier.stoptimes(**query_params)
 
         # Get realtime
         if realtime and level > 0:
@@ -314,7 +310,6 @@ class StopTimes(generics.ListCreateAPIView):
                                                    not True else None)
             response = result_serializer\
                 .get_nested_dicts(realtime_only=realtime_only)
-            logger.info("Found %s of them." % len(response))
             return response
 
         else:

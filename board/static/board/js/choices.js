@@ -38,6 +38,7 @@
         var url = "/api/trips/";
         var data = {
             level: 3,
+            limit:500,
             on_route_short_name: selectedLine
         };
         var success = global.updateTableData.bind(this,global.tripDatatable);
@@ -52,6 +53,7 @@
         var data = {
             realtime: true,
             trip_id_filter: selectedTrip,
+            limit:50, // max number of elements (for pagination)
             level: 3 // to get StopTime, Stop
         };
         var success = global.updateTableData.bind(this,global.focusedTripDatatable);

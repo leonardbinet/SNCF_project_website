@@ -13,13 +13,11 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header">Project's API</h1>
+            <h1 class="page-header">Project's Api overview</h1>
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h2>Overview</h2>
-                </div>
-                <!-- /.panel-heading -->
                 <div class="panel-body">
+
+                    <h3>Endpoints</h3>
                     You can currently access multiple endpoints.
                     <ul>
                         <li>
@@ -36,13 +34,42 @@
                         </li>
                         <li>
                             TRIPS:
-                            <a id="trip-url" href="{% url 'api_trip' %}"> {% url 'api_trip' %}"</a>
+                            <a id="trip-url" href="{% url 'api_trip' %}"> {% url 'api_trip' %}</a>
                         </li>
                         <li>
                             STOPTIMES:
-                            <a id="stoptime-url" href="{% url 'api_stoptime' %}"> {% url 'api_stoptime' %}"</a>
+                            <a id="stoptime-url" href="{% url 'api_stoptime' %}"> {% url 'api_stoptime' %}</a>
                         </li>
                     </ul>
+
+
+                    <h3>API parameters</h3>
+                    <h4>Common parameters to all endpoints</h4>
+                    <b>Query parameters:</b>
+                    <ul>
+                        <li>level: int from 0 to at most 4 (depends on the requested object): default 1.</li>
+                        <li>query_limit: max number of results of the query: default 10000.</li>
+                    </ul>
+                    <b>Pagination parameters:</b>
+                    <ul>
+                        <li>limit: max number of results on a page: default 20.</li>
+                        <li>offset: number of first result returned: default 0 (starts at beginning).</li>
+                    </ul>
+                    <h4>Specific parameters</h4>
+                    <b>Filtering parameters</b>
+                    <ul>
+                        <li>uic_code: filter on specific station: uic code of station (7 or 8 digits)</li>
+                        <li>trip_id_filter: filter on specific trip</li>
+                        <li>on_route_short_name: filter on specific line</li>
+                        <li>on_day: filter on specific day (all endpoints except Routes)</li>
+                        <li>active_at_time: filter on trips active at a specific time (hh:mm:ss format, boolean True=> active now)</li>
+                    </ul>
+                    <b>Realtime information parameters (only for StopTimes endpoint)</b>
+                    <ul>
+                        <li>realtime: boolean: do we update results with realtime information</li>
+                        <li>relatime_only: boolean: do we return only results with realtime found</li>
+                    </ul>
+
                 </div>
                 <!-- /.panel-body -->
             </div>

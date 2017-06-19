@@ -94,17 +94,26 @@
                                         <ul class="nav child_menu">
                                           <li><a href="{% url 'documentation' %}">Project documentation</a></li>
                                           <li><a target="_blank" href="https://leonardbinet.github.io/">ETL documentation</a></li>
-
                                         </ul>
                                     </li>
 
-                                    <!--
                                     <li>
-                                    <a href="{% url 'sncf_fr_map' %}"><i class="fa fa-map fa-fw"></i> Maps</a>
+                                        <a><i class="fa fa-map fa-fw"></i> Map <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                          <li><a href="https://leonardbinet.github.io/transilien-visualization/" target="_blank">Line H traffic</a></li>
+                                        </ul>
                                     </li>
-                                    -->
+
                                     <li>
-                                        <a href="{% url 'api' %}"><i class="fa fa-gears fa-fw"></i> Api</a>
+                                        <a><i class="fa fa-gears fa-fw"></i> Api <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="{% url 'api' %}"> API documentation </a></li>
+                                            <li><a href="{% url 'api_route' %}"> Routes </a></li>
+                                            <li><a href="{% url 'api_service' %}"> Services </a></li>
+                                            <li><a href="{% url 'api_station' %}"> Stations </a></li>
+                                            <li><a href="{% url 'api_trip' %}"> Trips </a></li>
+                                            <li><a href="{% url 'api_stoptime' %}"> StopTimes </a></li>
+                                        </ul>
                                     </li>
                                     <li>
                                         <a>
@@ -160,39 +169,6 @@
 
 
         {% block body_tail %}
-        <!-- FastClick -->
-        <script src="{% static 'gentelella/vendors/fastclick/lib/fastclick.js' %}"></script>
-        <!-- NProgress -->
-        <script src="{% static 'gentelella/vendors/nprogress/nprogress.js' %}"></script>
-        <!-- Chart.js -->
-        <script src="{% static 'gentelella/vendors/Chart.js/dist/Chart.min.js' %}"></script>
-        <!-- gauge.js -->
-        <script src="{% static 'gentelella/vendors/gauge.js/dist/gauge.min.js' %}"></script>
-        <!-- bootstrap-progressbar -->
-        <script src="{% static 'gentelella/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js' %}"></script>
-        <!-- iCheck -->
-        <script src="{% static 'gentelella/vendors/iCheck/icheck.min.js' %}"></script>
-        <!-- Skycons -->
-        <script src="{% static 'gentelella/vendors/skycons/skycons.js' %}"></script>
-        <!-- Flot -->
-        <script src="{% static 'gentelella/vendors/Flot/jquery.flot.js' %}"></script>
-        <script src="{% static 'gentelella/vendors/Flot/jquery.flot.pie.js' %}"></script>
-        <script src="{% static 'gentelella/vendors/Flot/jquery.flot.time.js' %}"></script>
-        <script src="{% static 'gentelella/vendors/Flot/jquery.flot.stack.js' %}"></script>
-        <script src="{% static 'gentelella/vendors/Flot/jquery.flot.resize.js' %}"></script>
-        <!-- Flot plugins -->
-        <script src="{% static 'gentelella/vendors/flot.orderbars/js/jquery.flot.orderBars.js' %}"></script>
-        <script src="{% static 'gentelella/vendors/flot-spline/js/jquery.flot.spline.min.js' %}"></script>
-        <script src="{% static 'gentelella/vendors/flot.curvedlines/curvedLines.js' %}"></script>
-        <!-- DateJS -->
-        <script src="{% static 'gentelella/vendors/DateJS/build/date.js' %}"></script>
-        <!-- JQVMap -->
-        <script src="{% static 'gentelella/vendors/jqvmap/dist/jquery.vmap.js' %}"></script>
-        <script src="{% static 'gentelella/vendors/jqvmap/dist/maps/jquery.vmap.world.js' %}"></script>
-        <script src="{% static 'gentelella/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js' %}"></script>
-        <!-- bootstrap-daterangepicker -->
-        <script src="{% static 'gentelella/vendors/moment/min/moment.min.js' %}"></script>
-        <script src="{% static 'gentelella/vendors/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
 
         {% endblock %}
     </body>
