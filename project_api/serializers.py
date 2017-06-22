@@ -9,16 +9,15 @@ These are created through a Class Factory transforming model classes into
 serializer classes.
 """
 
-import logging
-from datetime import datetime
 
 from rest_framework import serializers
 
-from api_etl.models import (
+from lib.api_etl.data_models import (
     Calendar, CalendarDate, Trip, StopTime, Stop, Agency, Route,
     RealTimeDeparture
 )
-
+from lib.api_etl.querier_realtime import StopTimeState
+from lib.api_etl.feature_vector import StopTimeFeatureVector
 
 def ModelToSerializerFactory(class_name, ExtractedClass):
     """ Transforms a model class in a corresponding Serializer class
@@ -31,10 +30,7 @@ def ModelToSerializerFactory(class_name, ExtractedClass):
         # for all non-hidden attributes
         if not key.startswith("_") and not callable(value):
             # set them as CharFields
-            class_body[key] = serializers.CharField(
-                max_length=300,
-                required=False
-            )
+            class_body[key] = serializers.CharField(max_length=300, required=False)
 
     newclass = type(class_name, (BaseClass,), class_body)
     return newclass
@@ -43,16 +39,16 @@ def ModelToSerializerFactory(class_name, ExtractedClass):
 # Calendar, CalendarDate, Trip, StopTime, Stop, Agency, Route, RealTimeDeparture
 
 CalendarSerializer = ModelToSerializerFactory("CalendarSerializer", Calendar)
-CalendarDateSerializer = ModelToSerializerFactory(
-    "CalendarDateSerializer", CalendarDate)
+CalendarDateSerializer = ModelToSerializerFactory("CalendarDateSerializer", CalendarDate)
 TripSerializer = ModelToSerializerFactory("TripSerializer", Trip)
 StopTimeSerializer = ModelToSerializerFactory("StopTimeSerializer", StopTime)
 StopSerializer = ModelToSerializerFactory("StopSerializer", Stop)
 AgencySerializer = ModelToSerializerFactory("AgencySerializer", Agency)
 RouteSerializer = ModelToSerializerFactory("RouteSerializer", Route)
 AgencySerializer = ModelToSerializerFactory("AgencySerializer", Agency)
-RealTimeDepartureSerializer = ModelToSerializerFactory(
-    "RealTimeDepartureSerializer", RealTimeDeparture)
+RealTimeDepartureSerializer = ModelToSerializerFactory("RealTimeDepartureSerializer", RealTimeDeparture)
+StopTimeStateSerializer = ModelToSerializerFactory("StopTimeStateSerializer", StopTimeState)
+StopTimeFeatureVectorSerializer = ModelToSerializerFactory("StopTimeFeatureVectorSerializer", StopTimeFeatureVector)
 
 
 class NestedSerializer(serializers.Serializer):
@@ -64,3 +60,18 @@ class NestedSerializer(serializers.Serializer):
     Agency = AgencySerializer(required=False)
     Route = RouteSerializer(required=False)
     RealTime = RealTimeDepartureSerializer(required=False)
+
+
+class StopTimePredictorSerializer(serializers.Serializer):
+    StopTime = StopTimeSerializer(required=False)
+    Stop = StopSerializer(required=False)
+    RealTime = RealTimeDepartureSerializer(required=False)
+    StopTimeState = StopTimeStateSerializer(required=False)
+
+    StopTimeFeatureVector = StopTimeFeatureVectorSerializer(required=False)
+
+    at_datetime = serializers.CharField(max_length=300, required=False)
+    scheduled_day = serializers.CharField(max_length=300, required=False)
+    next_stop_passed_realtime = serializers.CharField(max_length=300, required=False)
+    to_predict = serializers.CharField(max_length=300, required=False)
+    prediction = serializers.CharField(max_length=300, required=False)

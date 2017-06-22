@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+<!-- Balise title <60 caractères -->
+{% block title %}
+<title>Source code</title>
+{% endblock %}
+
+{% block header_up %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Source code</h1>
+
+            Project's code is divided in several repositories:
+
+            <ul>
+                <li>
+                    <a target="_blank" href="https://github.com/leonardbinet/Transilien-Api-ETL">ETL and prediction tasks. --Access repository--.</a>
+                </li>
+                <li>
+                    <a target="_blank" href="https://github.com/leonardbinet/SNCF_project_website">Project website and API. --Access repository--</a>
+                </li>
+                <li>
+                    <a target="_blank" href="https://github.com/leonardbinet/Salt-Vagrant-master-mode">Deployment automation. --Access repository--</a>
+                </li>
+                <li>
+                    <a target="_blank" href="https://github.com/leonardbinet/transilien-visualization">Data visualization. --Access repository--</a>
+                </li>
+            </ul>
+
+
+
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+
+{% endblock %}
+
+{% block body_tail %}
+{% endblock %}

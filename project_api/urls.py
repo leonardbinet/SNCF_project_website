@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^stations/$', views.Stations.as_view(), name='api_station'),
     url(r'^trips/$', views.Trips.as_view(), name='api_trip'),
     url(r'^stoptimes/$', views.StopTimes.as_view(), name='api_stoptime'),
+    url(r'^trip-prediction/$', views.TripPrediction.as_view(), name='api_trip_prediction'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

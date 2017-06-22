@@ -8,18 +8,27 @@ from distutils.util import strtobool
 from django.shortcuts import render
 from rest_framework import generics
 
-from lib.api_etl.schedule_querier import DBQuerier
-from lib.api_etl.realtime_querier import ResultsSet
+from lib.api_etl.querier_schedule import DBQuerier
+from lib.api_etl.querier_realtime import ResultsSet
+from lib.api_etl.builder_feature_vector import TripPredictor, StopTimePredictor
+
 from project_api.serializers import (
     NestedSerializer, CalendarSerializer, CalendarDateSerializer,
     TripSerializer, StopTimeSerializer, StopSerializer, AgencySerializer,
-    RouteSerializer, AgencySerializer, RealTimeDepartureSerializer
+    RouteSerializer, AgencySerializer, RealTimeDepartureSerializer, StopTimePredictorSerializer
 )
 
 logger = logging.getLogger("django")
 
 
-def extractLevel(request, default=1):
+def display_params(params_dict):
+    message = "\n\nVIEW PARAMS \n"
+    for name, value in params_dict.items():
+        message += " -%s: %s\n" % (name, value)
+    logger.info(message)
+
+
+def extract_level(request, default=1):
     """ Extract level from get parameters and parse it.
     """
     level = request.query_params.get('level', default)
@@ -30,14 +39,7 @@ def extractLevel(request, default=1):
     return level
 
 
-def displayParams(params_dict):
-    message = "\n\nVIEW PARAMS \n"
-    for name, value in params_dict.items():
-        message += " -%s: %s\n" % (name, value)
-    logger.info(message)
-
-
-def extractInt(request, name, default=10000):
+def extract_int(request, name, default=10000):
     """ Extract int from get parameters and parse it.
     """
     answer = request.query_params.get(name, default)
@@ -48,14 +50,14 @@ def extractInt(request, name, default=10000):
         return default
 
 
-def extractUicCode(request, name):
+def extract_uic_code(request, name):
     uic_code = request.query_params.get(name, None)
     if uic_code and (not((len(uic_code) == 7) or (len(uic_code) == 8))):
         uic_code = None
     return uic_code
 
 
-def extractBool(request, name, default=None):
+def extract_bool(request, name, default=None):
     """ Extract bool from get parameters and parse it.
     """
     answer = request.query_params.get(name, default)
@@ -66,7 +68,7 @@ def extractBool(request, name, default=None):
         return default
 
 
-def extractAtDate(request, name, regex, default=True):
+def extract_at_date(request, name, regex, default=True):
     """ Extract level from get parameters and parse it.
     """
     answer = request.query_params.get(name, default)
@@ -102,8 +104,8 @@ class Services(generics.ListCreateAPIView):
         """ Queryset provider
         """
         # ARGS PARSING
-        level = extractLevel(self.request)
-        on_day = extractAtDate(
+        level = extract_level(self.request)
+        on_day = extract_at_date(
             self.request,
             "on_day",
             "%Y%m%d",
@@ -128,7 +130,7 @@ class Routes(generics.ListCreateAPIView):
         """ Queryset provider
         """
         # ARGS PARSING
-        level = extractLevel(self.request)
+        level = extract_level(self.request)
 
         # PERFORM QUERY
         querier = DBQuerier()
@@ -149,7 +151,7 @@ class Stations(generics.ListCreateAPIView):
         """ Queryset provider
         """
         # ARGS PARSING
-        level = extractLevel(self.request)
+        level = extract_level(self.request)
         on_route_short_name = self.request.query_params\
             .get('on_route_short_name', None)
 
@@ -157,7 +159,7 @@ class Stations(generics.ListCreateAPIView):
             "level": level,
             "on_route_short_name": on_route_short_name
         }
-        displayParams(query_params)
+        display_params(query_params)
 
         # PERFORM QUERY
         querier = DBQuerier()
@@ -177,7 +179,7 @@ class Trips(generics.ListCreateAPIView):
     """
 
     def get_serializer_class(self):
-        level = extractLevel(self.request)
+        level = extract_level(self.request)
         if level == 1:
             return TripSerializer
         else:
@@ -187,20 +189,20 @@ class Trips(generics.ListCreateAPIView):
         """ Queryset provider
         """
         # ARGS PARSING
-        active_at_time = extractAtDate(
+        active_at_time = extract_at_date(
             self.request,
             "active_at_time",
             "%H:%M:%S",
             True
         )
-        on_day = extractAtDate(
+        on_day = extract_at_date(
             self.request,
             "on_day",
             "%Y%m%d",
             True
         )
-        level = extractLevel(self.request)
-        limit = extractInt(self.request, 'query_limit', 10000)
+        level = extract_level(self.request)
+        limit = extract_int(self.request, 'query_limit', 10000)
         on_route_short_name = self.request.query_params\
             .get('on_route_short_name', None)
 
@@ -211,7 +213,7 @@ class Trips(generics.ListCreateAPIView):
             "limit": limit,
             "on_route_short_name": on_route_short_name
         }
-        displayParams(query_params)
+        display_params(query_params)
 
         # PERFORM QUERY
         querier = DBQuerier()
@@ -234,11 +236,11 @@ class StopTimes(generics.ListCreateAPIView):
     """
 
     def get_serializer_class(self):
-        realtime = extractBool(self.request, "realtime", None)
-        realtime_only = extractBool(self.request, "realtime_only", None)
+        realtime = extract_bool(self.request, "realtime", None)
+        realtime_only = extract_bool(self.request, "realtime_only", None)
         if realtime or realtime_only:
             return NestedSerializer
-        level = extractLevel(self.request)
+        level = extract_level(self.request)
         if level == 1:
             return StopTimeSerializer
         else:
@@ -250,30 +252,31 @@ class StopTimes(generics.ListCreateAPIView):
         logger.info("STOPTIMES API")
         # ARGS PARSING
 
-        active_at_time = extractAtDate(
+        active_at_time = extract_at_date(
             self.request,
             "active_at_time",
             "%H:%M:%S",
             True
         )
-        on_day = extractAtDate(
+        on_day = extract_at_date(
             self.request,
             "on_day",
             "%Y%m%d",
             True
         )
 
-        level = extractLevel(self.request)
-        limit = extractInt(self.request, 'query_limit', 10000)
-        uic_code = extractUicCode(self.request, 'uic_code')
+        level = extract_level(self.request)
+        limit = extract_int(self.request, 'query_limit', 10000)
+        uic_code = extract_uic_code(self.request, 'uic_code')
         trip_id_filter = self.request.query_params.get('trip_id_filter', False)
         on_route_short_name = self.request.query_params\
             .get('on_route_short_name', None)
 
-        realtime = extractBool(self.request, "realtime", None)
-        realtime_only = extractBool(self.request, "realtime_only", None)
+        realtime = extract_bool(self.request, "realtime", None)
+        realtime_only = extract_bool(self.request, "realtime_only", None)
+        prediction = extract_bool(self.request, "prediction", None)
 
-        if realtime_only:
+        if realtime_only or prediction:
             realtime = True
 
         query_params = {
@@ -287,11 +290,12 @@ class StopTimes(generics.ListCreateAPIView):
         }
         realtime_params = {
             "realtime": realtime,
-            "realtime_only": realtime_only
+            "realtime_only": realtime_only,
+            "prediction": prediction
         }
 
-        displayParams(query_params)
-        displayParams(realtime_params)
+        display_params(query_params)
+        display_params(realtime_params)
 
         # PERFORM QUERY
         querier = DBQuerier()
@@ -310,9 +314,40 @@ class StopTimes(generics.ListCreateAPIView):
                 scheduled_day=on_day if on_day is not True else None
             )
 
-            response = result_serializer\
-                .get_nested_dicts(realtime_only=realtime_only)
+            response = result_serializer.results
+
+            if realtime_only:
+                response = [resp for resp in response if resp.has_realtime()]
+
             return response
 
         else:
             return result
+
+
+class TripPrediction(generics.ListCreateAPIView):
+    """
+    Return stoptimes predictions
+
+    You have to provide a trip_id for it to work.
+
+    Example: /api/trip-prediction/?trip_id=DUASN145833F05002-1_408310
+        (works if trip_id is present in base and is running on that day)
+    """
+
+    def get_serializer_class(self):
+        return StopTimePredictorSerializer
+
+    def get_queryset(self):
+        """ Queryset provider
+        """
+        logger.info("TRIP PREDICTION API")
+        # ARGS PARSING
+
+        trip_id = self.request.query_params.get('trip_id', None)
+        if not trip_id:
+            return []
+
+        # PERFORM QUERY
+        trip_predictor = TripPredictor(trip_id=trip_id)
+        return list(trip_predictor._stoptime_predictors.values())
