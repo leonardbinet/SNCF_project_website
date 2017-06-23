@@ -81,6 +81,11 @@
 
                     <table id="focused-trip-stoptimes-table" class="table table-hover table-striped table-bordered" width="100%"></table>
 
+                    <br/>
+                    <div><b>Predictions</b></div>
+                    <br/>
+                    <table id="focused-trip-prediction-stoptimes-table" class="table table-hover table-striped table-bordered" width="100%"></table>
+
                 </div>
                 <!-- /.panel-body -->
             </div>
@@ -101,10 +106,13 @@
 <!-- Datatables-->
 <script src="{% static 'gentelella/vendors/datatables.net/js/jquery.dataTables.js' %}"></script>
 
-<!-- Choices-->
-<script src="{% static 'board/js/tables.js' %}"></script>
+<!-- Ajax requests-->
+<script src="{% static 'board/js/ajax_requests.js' %}"></script>
 
 <!-- Tables-->
+<script src="{% static 'board/js/tables.js' %}"></script>
+
+<!-- Choices-->
 <script src="{% static 'board/js/choices.js' %}"></script>
 
 

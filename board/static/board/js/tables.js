@@ -33,6 +33,24 @@
 
             ]
         } );
+
+        global.focusedTripPredictionDatatable = $('#focused-trip-prediction-stoptimes-table').DataTable( {
+            "processing":true,
+            "language": {
+                    "processing": "Loading..."
+                },
+            columns: [
+                { title: "Stop sequence", data: "StopTime.stop_sequence"},
+                { title: "Scheduled departure time" , data: "StopTime.departure_time"},
+                { title: "Stop name", data: "Stop.stop_name"},
+                { title: "Delay observed", data: "StopTimeState.delay", "defaultContent": "not found"},
+                { title: "Data freshness", data: "RealTime.data_freshness", "defaultContent": "not found"},
+                { title: "Passed (schedule)", data: "StopTimeState.passed_schedule", "defaultContent": "not found"},
+                { title: "Passed (realtime)", data: "StopTimeState.passed_realtime", "defaultContent": "not found"},
+                { title: "To predict?", data: "to_predict", "defaultContent": "not found"},
+                { title: "Delay prediction", data: "prediction", "defaultContent": "not found"},
+            ]
+        } );
     };
 
     global.updateTableData = function(table, data){
