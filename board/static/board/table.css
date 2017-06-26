@@ -1,3 +1,8 @@
 table tr.selected {
-        background-color: linen !important;
-    }
+    background-color: mintcream !important;
+}
+
+table tr.passed-realtime {
+    background-color: mintcream !important;
+
+}

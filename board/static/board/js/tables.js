@@ -46,13 +46,24 @@
                 { title: "Stop sequence", data: "StopTime.stop_sequence"},
                 { title: "Scheduled departure time" , data: "StopTime.departure_time"},
                 { title: "Stop name", data: "Stop.stop_name"},
-                { title: "Delay observed", data: "StopTimeState.delay", "defaultContent": "not found"},
-                { title: "Data freshness", data: "RealTime.data_freshness", "defaultContent": "not found"},
-                { title: "Passed (schedule)", data: "StopTimeState.passed_schedule", "defaultContent": "not found"},
-                { title: "Passed (realtime)", data: "StopTimeState.passed_realtime", "defaultContent": "not found"},
-                { title: "To predict?", data: "to_predict", "defaultContent": "not found"},
-                { title: "Delay prediction", data: "prediction", "defaultContent": "not found"},
-            ]
+                { title: "Delay observed", data: "StopTimeState.delay", defaultContent: "not found"},
+                { title: "Data freshness", data: "RealTime.data_freshness", defaultContent: "not found"},
+                { title: "Passed (schedule)", data: "StopTimeState.passed_schedule", defaultContent: "not found"},
+                { title: "Passed (realtime)", data: "StopTimeState.passed_realtime", defaultContent: "not found"},
+                { title: "To predict?", data: "to_predict", defaultContent: "not found"},
+                { title: "Delay prediction", data: "prediction", defaultContent: "not found",
+                render: function( data, type, row ) {
+                    if (!data){return "not found";}
+                    data = +data;
+                    return data.toFixed(1);
+                    }
+                },
+            ],
+            createdRow: function( row, data, dataIndex){
+                if( data.StopTimeState.passed_realtime == "True"){
+                    $(row).addClass('passed-realtime');
+                }
+            }
         } );
     };
 
