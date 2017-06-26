@@ -5,10 +5,13 @@
         // Trip table
 
         global.tripDatatable = $('#active-trains-table').DataTable( {
+                scrollX: true,
+                scrollCollapse: true,
                 processing:true,
                 language: {
                     processing: "Loading..."
                 },
+                pageLength: 10,
             columns: [
                 { title: "Trip id", data: "Trip.trip_id"},
                 { title: "Service id", data: "Trip.service_id"},
@@ -38,10 +41,13 @@
         */
 
         global.focusedTripPredictionDatatable = $('#focused-trip-prediction-stoptimes-table').DataTable( {
-            "processing":true,
-            "language": {
-                    "processing": "Loading..."
+            processing:true,
+            language: {
+                    processing: "Loading..."
                 },
+            pageLength: 30,
+            scrollX: true,
+            scrollCollapse: true,
             columns: [
                 { title: "Stop sequence", data: "StopTime.stop_sequence"},
                 { title: "Scheduled departure time" , data: "StopTime.departure_time"},
@@ -63,7 +69,12 @@
                 if( data.StopTimeState.passed_realtime == "True"){
                     $(row).addClass('passed-realtime');
                 }
-            }
+
+                if ( data.to_predict == "True" ) {
+                    $('td', row).eq(7).addClass('predicted');
+                    $('td', row).eq(8).addClass('predicted');
+                }
+            },
         } );
     };
 

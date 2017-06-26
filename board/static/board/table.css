@@ -6,3 +6,7 @@ table tr.passed-realtime {
     background-color: mintcream !important;
 
 }
+
+table td.predicted {
+    background-color: ivory
+}
