@@ -28,7 +28,7 @@
             on_day: false
         };
 
-        var success = global.updateTableData.bind(this, global.focusedTripDatatable);
+        var success = global.updateTableData.bind(this, global.focusedTripPredictionDatatable);
 
         $.get(url, data, success)
     }

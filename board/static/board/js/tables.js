@@ -3,6 +3,7 @@
     global.initDatatables = function(){
         
         // Trip table
+
         global.tripDatatable = $('#active-trains-table').DataTable( {
                 processing:true,
                 language: {
@@ -16,9 +17,10 @@
                 { title: "Route", data: "Route.route_long_name", "defaultContent": "not found"},
             ]
         } );
-        
+
         
         // Trip focus Stoptimes table
+        /*
         global.focusedTripDatatable = $('#focused-trip-stoptimes-table').DataTable( {
             "processing":true,
             "language": {
@@ -33,6 +35,7 @@
 
             ]
         } );
+        */
 
         global.focusedTripPredictionDatatable = $('#focused-trip-prediction-stoptimes-table').DataTable( {
             "processing":true,

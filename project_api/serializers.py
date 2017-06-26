@@ -60,6 +60,7 @@ class NestedSerializer(serializers.Serializer):
     Agency = AgencySerializer(required=False)
     Route = RouteSerializer(required=False)
     RealTime = RealTimeDepartureSerializer(required=False)
+    StopTimeState = StopTimeStateSerializer(required=False)
 
 
 class StopTimePredictorSerializer(serializers.Serializer):

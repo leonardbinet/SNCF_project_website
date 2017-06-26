@@ -313,6 +313,7 @@ class StopTimes(generics.ListCreateAPIView):
             result_serializer.batch_realtime_query(
                 scheduled_day=on_day if on_day is not True else None
             )
+            result_serializer.compute_stoptimes_states()
 
             response = result_serializer.results
 

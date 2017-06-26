@@ -68,7 +68,7 @@
 
     function emptyTables(){
         // empty tables
-        global.updateTableData(global.focusedTripDatatable);
+        //global.updateTableData(global.focusedTripDatatable);
         global.updateTableData(global.focusedTripPredictionDatatable);
     }
 
